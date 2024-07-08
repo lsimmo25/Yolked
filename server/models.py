@@ -45,6 +45,12 @@ class Workout(db.Model, SerializerMixin):
     user = db.relationship('User', back_populates='workouts')
     exercises = db.relationship('WorkoutExercise', back_populates='workout')
 
+    @validates('date')
+    def validates_date(self, key, date):
+        if not date:
+            raise ValueError('validation errors')
+        return date
+
 class Exercise(db.Model, SerializerMixin):
     __tablename__ = "exercises"
 
@@ -54,11 +60,10 @@ class Exercise(db.Model, SerializerMixin):
     workouts = db.relationship('WorkoutExercise', back_populates='exercise')
 
     @validates('name')
-    def validates_name(self, key, name):
+    def validate_name(self, key, name):
         if not name:
             raise ValueError('validation errors')
         return name
-
 
 class WorkoutExercise(db.Model, SerializerMixin):
     __tablename__ = "workout_exercises"
@@ -71,3 +76,15 @@ class WorkoutExercise(db.Model, SerializerMixin):
 
     workout = db.relationship('Workout', back_populates='exercises')
     exercise = db.relationship('Exercise', back_populates='workouts')
+
+    @validates('weight')
+    def validate_weight(self, key, weight):
+        if not weight:
+            raise ValueError('validation errors')
+        return weight
+    
+    @validates('reps')
+    def validate_reps(self, key, reps):
+        if not reps:
+            raise ValueError('validation errors')
+        return reps
