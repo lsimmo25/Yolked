@@ -1,8 +1,9 @@
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import validates
 
-from config import db
+from config import db, bcrypt
 
 class User(db.model, SerializerMixin):
 
@@ -40,7 +41,27 @@ class Workout(db.model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, nullable=False)
-    exercise = db.Column(db.String, nullable=False)
-    weight = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    exercises = db.relationship('WorkoutExercise', back_populates='workout')
+
+class Exercise(db.model, SerializerMixin):
+
+    __tablename__ = "exercises"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+
+    workouts = db.relationship('WorkoutExercise', back_populates='exercise')
+
+class WorkoutExercise(db.Model, SerializerMixin):
+
+    __tablename__ = "workout_exercises"
+
+    id = db.Column(db.Integer, primary_key=True)
+    workout_id = db.Column(db.Integer, db.ForeignKey('workout.id'), nullable=False)
+    exercise_id = db.Column(db.Integer, db.ForeignKey('exercise.id'), nullable=False)
+    weight = db.Column(db.Float, nullable=False)
     reps = db.Column(db.Integer, nullable=False)
+
+    exercise = db.relationship('Exercise', back_populates='workout_exercises')
 
