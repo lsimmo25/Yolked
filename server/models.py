@@ -5,6 +5,7 @@ from config import db, bcrypt
 
 class User(db.Model, SerializerMixin):
     __tablename__ = "users"
+    serialize_rules = ('-workouts.user', '-_password_hash')
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, nullable=False)
     _password_hash = db.Column(db.String, nullable=True)
@@ -12,8 +13,6 @@ class User(db.Model, SerializerMixin):
     bio = db.Column(db.String, nullable=True)
 
     workouts = db.relationship('Workout', back_populates='user', cascade='all, delete-orphan')
-
-    serialize_rules = ('-workouts.user', '-_password_hash')
 
     @validates('username')
     def validate_username(self, key, username):
@@ -35,16 +34,23 @@ class User(db.Model, SerializerMixin):
     def authenticate(self, password):
         return bcrypt.check_password_hash(self._password_hash, password.encode('utf-8'))
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'image_url': self.image_url,
+            'bio': self.bio
+        }
+
 class Workout(db.Model, SerializerMixin):
     __tablename__ = "workouts"
+    serialize_rules = ('-user.workouts', '-exercises.workout')
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     user = db.relationship('User', back_populates='workouts')
-    exercises = db.relationship('WorkoutExercise', back_populates='workout')
-
-    serialize_rules = ('-user.workouts', '-exercises.workout')
+    exercises = db.relationship('WorkoutExercise', back_populates='workout', cascade='all, delete-orphan')
 
     @validates('date')
     def validate_date(self, key, date):
@@ -60,12 +66,11 @@ class Workout(db.Model, SerializerMixin):
 
 class Exercise(db.Model, SerializerMixin):
     __tablename__ = "exercises"
+    serialize_rules = ('-workouts.exercise',)
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
 
-    workouts = db.relationship('WorkoutExercise', back_populates='exercise')
-
-    serialize_rules = ('-workouts.exercise',)
+    workout_exercises = db.relationship('WorkoutExercise', back_populates='exercise')
 
     @validates('name')
     def validate_name(self, key, name):
@@ -75,6 +80,7 @@ class Exercise(db.Model, SerializerMixin):
 
 class WorkoutExercise(db.Model, SerializerMixin):
     __tablename__ = "workout_exercises"
+    serialize_rules = ('-workout.exercises', '-exercise.workouts')
     id = db.Column(db.Integer, primary_key=True)
     workout_id = db.Column(db.Integer, db.ForeignKey('workouts.id'), nullable=False)
     exercise_id = db.Column(db.Integer, db.ForeignKey('exercises.id'), nullable=False)
@@ -82,9 +88,7 @@ class WorkoutExercise(db.Model, SerializerMixin):
     reps = db.Column(db.Integer, nullable=False)
 
     workout = db.relationship('Workout', back_populates='exercises')
-    exercise = db.relationship('Exercise', back_populates='workouts')
-
-    serialize_rules = ('-workout.exercises', '-exercise.workouts')
+    exercise = db.relationship('Exercise', back_populates='workout_exercises')
 
     @validates('weight')
     def validate_weight(self, key, weight):
