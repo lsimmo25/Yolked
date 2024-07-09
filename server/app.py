@@ -65,6 +65,7 @@ def handle_user_by_id(id):
             return make_response(jsonify({"errors": [str(e)]}), 400)
 
     if request.method == 'PATCH':
+
         data = request.get_json()
 
         try:
@@ -91,7 +92,59 @@ def handle_user_by_id(id):
             db.session.commit()
             return make_response(jsonify({"message": "User deleted successfully"}), 200)
         except Exception as e:
-            return make_response(jsonify({"errors": [str(e)]}), 400)    
+            return make_response(jsonify({"errors": [str(e)]}), 400)
+        
+@app.route('/users/<int:user_id>/workouts', methods=['GET', 'POST'])
+def handle_workouts(user_id):
+    user = User.query.filter_by(user_id=user_id).first()
+    
+    if request.method == 'GET':
+        workouts = [workout.to_dict() for workout in user.workouts]
+        return make_response(jsonify(workouts), 200)
+    
+    if request.method == 'POST':
+        data = request.get_json()
+
+        if not 'date' in data:
+            return make_response(jsonify({"errors": ["Date is required."]}), 400)
+
+        try:
+            new_workout = Workout(
+                date=data['date'],
+                user_id=user.id
+            )
+            db.session.add(new_workout)
+            db.session.commit()
+            return make_response(jsonify(new_workout.to_dict()), 201)
+        except Exception as e:
+            return make_response(jsonify({"errors": [str(e)]}), 400)
+
+@app.route('/workouts/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def handle_workout_by_id(id):
+    workout = Workout.query.filter_by(id=id).first()
+    
+    if request.method == 'GET':
+        return make_response(jsonify(workout.to_dict()), 200)
+
+    if request.method == 'PATCH':
+        data = request.get_json()
+
+        if 'date' in data:
+            workout.date = data['date']
+
+        try:
+            db.session.commit()
+            return make_response(jsonify(workout.to_dict()), 200)
+        except Exception as e:
+            return make_response(jsonify({"errors": [str(e)]}), 400)
+
+    if request.method == 'DELETE':
+        try:
+            db.session.delete(workout)
+            db.session.commit()
+            return make_response(jsonify({"message": "Workout deleted successfully"}), 200)
+        except Exception as e:
+            return make_response(jsonify({"errors": [str(e)]}), 400)
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
