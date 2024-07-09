@@ -42,12 +42,30 @@ class Workout(db.Model, SerializerMixin):
     user = db.relationship('User', back_populates='workouts')
     exercises = db.relationship('WorkoutExercise', back_populates='workout')
 
+    @validates('date')
+    def validate_date(self, key, date):
+        if not date:
+            raise ValueError("Date cannot be blank.")
+        return date
+
+    @validates('user_id')
+    def validate_user_id(self, key, user_id):
+        if not user_id:
+            raise ValueError("User ID cannot be blank.")
+        return user_id
+
 class Exercise(db.Model, SerializerMixin):
     __tablename__ = "exercises"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
 
     workouts = db.relationship('WorkoutExercise', back_populates='exercise')
+
+    @validates('name')
+    def validate_name(self, key, name):
+        if not name:
+            raise ValueError("Exercise name cannot be blank.")
+        return name
 
 class WorkoutExercise(db.Model, SerializerMixin):
     __tablename__ = "workout_exercises"
@@ -59,3 +77,15 @@ class WorkoutExercise(db.Model, SerializerMixin):
 
     workout = db.relationship('Workout', back_populates='exercises')
     exercise = db.relationship('Exercise', back_populates='workouts')
+
+    @validates('weight')
+    def validate_weight(self, key, weight):
+        if weight <= 0:
+            raise ValueError("Weight must be greater than zero.")
+        return weight
+
+    @validates('reps')
+    def validate_reps(self, key, reps):
+        if reps <= 0:
+            raise ValueError("Reps must be greater than zero.")
+        return reps
