@@ -13,6 +13,8 @@ class User(db.Model, SerializerMixin):
 
     workouts = db.relationship('Workout', back_populates='user', cascade='all, delete-orphan')
 
+    serialize_rules = ('-workouts.user', '-_password_hash')
+
     @validates('username')
     def validate_username(self, key, username):
         if not username:
@@ -42,6 +44,8 @@ class Workout(db.Model, SerializerMixin):
     user = db.relationship('User', back_populates='workouts')
     exercises = db.relationship('WorkoutExercise', back_populates='workout')
 
+    serialize_rules = ('-user.workouts', '-exercises.workout')
+
     @validates('date')
     def validate_date(self, key, date):
         if not date:
@@ -61,6 +65,8 @@ class Exercise(db.Model, SerializerMixin):
 
     workouts = db.relationship('WorkoutExercise', back_populates='exercise')
 
+    serialize_rules = ('-workouts.exercise',)
+
     @validates('name')
     def validate_name(self, key, name):
         if not name:
@@ -77,6 +83,8 @@ class WorkoutExercise(db.Model, SerializerMixin):
 
     workout = db.relationship('Workout', back_populates='exercises')
     exercise = db.relationship('Exercise', back_populates='workouts')
+
+    serialize_rules = ('-workout.exercises', '-exercise.workouts')
 
     @validates('weight')
     def validate_weight(self, key, weight):

@@ -33,7 +33,7 @@ def handle_users():
         bio = data['bio']
         password = data['password']
 
-        if User.query.filter_by(username=data['username']).first()
+        if User.query.filter_by(username=data['username']).first():
             return make_response(jsonify({'errors': "Username already exists."}), 400)
         
         try:
@@ -91,7 +91,7 @@ def handle_user_by_id(id):
             db.session.commit()
             return make_response(jsonify({"message": "User deleted successfully"}), 200)
         except Exception as e:
-            return make_response(jsonify({"errors": [str(e)]}), 400)       
+            return make_response(jsonify({"errors": [str(e)]}), 400)    
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
