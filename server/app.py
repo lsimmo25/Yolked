@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-from flask import request, Flask, make_response, jsonify
+from flask import request, Flask, make_response, jsonify, session
 from flask_restful import Resource
+from flask_session import Session
 
 # Local imports
 from config import app, db, api
@@ -9,6 +10,10 @@ from config import app, db, api
 # Model imports
 from models import User, Workout, Exercise, WorkoutExercise
 
+# Configure Session
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SECRET_KEY'] = 'supersecretkey'
+Session(app)
 
 # Routes
 
@@ -41,6 +46,34 @@ def signup():
         return make_response(jsonify(new_user.to_dict()), 201)
     except Exception as e:
         return make_response(jsonify({"errors": [str(e)]}), 400)
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    username = data['username']
+    password = data['password']
+
+    user = User.query.filter_by(username=username).first()
+
+    if user and user.authenticate(password):
+        session['user_id'] = user.id
+        return make_response(jsonify({'message': 'Login successful'}), 200)
+    else:
+        return make_response(jsonify({'errors': 'Invalid username or password'}), 400)
+
+@app.route('/checksession', methods=['GET'])
+def check_session():
+    user_id = session.get('user_id')
+    if user_id:
+        user = User.query.get(user_id)
+        if user:
+            return make_response(jsonify(user.to_dict()), 200)
+    return make_response(jsonify({'message': 'Not logged in'}), 401)
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    session.pop('user_id', None)
+    return make_response(jsonify({'message': 'Logout successful'}), 200)
 
 @app.route('/users', methods=['GET'])
 def handle_users():
