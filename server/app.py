@@ -50,8 +50,48 @@ def handle_users():
             return make_response(jsonify(new_user.to_dict()), 201)
         except Exception as e:
             return make_response(jsonify({"errors": [str(e)]}), 400)
+        
+@app.route('/users/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
+def handle_user_by_id(id):
+    user = User.query.filter_by(id=id).first()
 
+    if not user:
+        return make_response(jsonify({"errors": ["User not found"]}), 400)
 
+    if request.method == 'GET':
+        try:
+            return make_response(jsonify(user.to_dict()), 200)
+        except Exception as e:
+            return make_response(jsonify({"errors": [str(e)]}), 400)
+
+    if request.method == 'PATCH':
+        data = request.get_json()
+
+        try:
+            if 'username' in data:
+                user.username = data['username']
+            
+            if 'password' in data:
+                user.password_hash = data['password']
+            
+            if 'image_url' in data:
+                user.image_url = data['image_url']
+            
+            if 'bio' in data:
+                user.bio = data['bio']
+            
+            db.session.commit()
+            return make_response(jsonify(user.to_dict()), 200)
+        except Exception as e:
+            return make_response(jsonify({"errors": [str(e)]}), 400)
+        
+    if request.method == 'DELETE':
+        try:
+            db.session.delete(user)
+            db.session.commit()
+            return make_response(jsonify({"message": "User deleted successfully"}), 200)
+        except Exception as e:
+            return make_response(jsonify({"errors": [str(e)]}), 400)       
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
