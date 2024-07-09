@@ -96,7 +96,7 @@ def handle_user_by_id(id):
         
 @app.route('/users/<int:user_id>/workouts', methods=['GET', 'POST'])
 def handle_workouts(user_id):
-    user = User.query.filter_by(user_id=user_id).first()
+    user = User.query.filter_by(id=user_id).first()
     
     if request.method == 'GET':
         workouts = [workout.to_dict() for workout in user.workouts]

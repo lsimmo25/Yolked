@@ -34,14 +34,6 @@ class User(db.Model, SerializerMixin):
     def authenticate(self, password):
         return bcrypt.check_password_hash(self._password_hash, password.encode('utf-8'))
 
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'username': self.username,
-            'image_url': self.image_url,
-            'bio': self.bio
-        }
-
 class Workout(db.Model, SerializerMixin):
     __tablename__ = "workouts"
     serialize_rules = ('-user.workouts', '-exercises.workout')
@@ -66,7 +58,7 @@ class Workout(db.Model, SerializerMixin):
 
 class Exercise(db.Model, SerializerMixin):
     __tablename__ = "exercises"
-    serialize_rules = ('-workouts.exercise',)
+    serialize_rules = ('-workout_exercises.exercise',)
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
 
@@ -80,7 +72,7 @@ class Exercise(db.Model, SerializerMixin):
 
 class WorkoutExercise(db.Model, SerializerMixin):
     __tablename__ = "workout_exercises"
-    serialize_rules = ('-workout.exercises', '-exercise.workouts')
+    serialize_rules = ('-workout.exercises', '-exercise.workout_exercises')
     id = db.Column(db.Integer, primary_key=True)
     workout_id = db.Column(db.Integer, db.ForeignKey('workouts.id'), nullable=False)
     exercise_id = db.Column(db.Integer, db.ForeignKey('exercises.id'), nullable=False)
