@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./LoginForm.css";
+import "./SignUpForm.css"; // Ensure this path is correct
 
 function LoginForm({ onLogin, setShowLogin }) {
   const [username, setUsername] = useState("");
@@ -35,8 +35,8 @@ function LoginForm({ onLogin, setShowLogin }) {
   }
 
   return (
-    <div className="login-container">
-      <form onSubmit={handleSubmit} className="login-form">
+    <div className="form-container">
+      <form onSubmit={handleSubmit} className="form">
         <div>
           <label htmlFor="username">Username</label>
           <input
@@ -69,7 +69,7 @@ function LoginForm({ onLogin, setShowLogin }) {
             ))}
           </div>
         )}
-        <div className="login-signup-link">
+        <div className="form-link">
           <p>
             Don't have an account? &nbsp;
             <button onClick={() => setShowLogin(false)}>
