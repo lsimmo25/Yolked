@@ -15,6 +15,9 @@ app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SECRET_KEY'] = 'supersecretkey'
 Session(app)
 
+def get_current_user_id():
+    return session.get('user_id')
+
 # Routes
 
 @app.route('/')
@@ -226,6 +229,41 @@ def handle_exercise_by_id(id):
             return make_response(jsonify({"message": "Exercise deleted successfully"}), 200)
         except Exception as e:
             return make_response(jsonify({"errors": [str(e)]}), 400)
+
+@app.route('/api/workout_exercises', methods=['POST'])
+def create_workout_exercise():
+    data = request.get_json()
+    user_id = get_current_user_id()
+
+    if not user_id:
+        return jsonify({'error': 'User not authenticated'}), 401
+
+    date = data.get('date')
+    exercises = data.get('exercises')
+
+    if not date or not exercises:
+        return jsonify({'error': 'Missing required fields'}), 400
+
+    try:
+        workout = Workout(date=date, user_id=user_id)
+        db.session.add(workout)
+        db.session.commit()
+
+        for ex in exercises:
+            workout_exercise = WorkoutExercise(
+                workout_id=workout.id,
+                exercise_id=ex['exerciseId'],
+                weight=ex['weight'],
+                reps=ex['reps']
+            )
+            db.session.add(workout_exercise)
+        
+        db.session.commit()
+
+        return jsonify(workout.to_dict()), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
