@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from sqlalchemy.orm import joinedload
 from flask import request, Flask, make_response, jsonify, session
 from flask_session import Session
 
@@ -101,7 +102,6 @@ def handle_user_by_id(id):
             return make_response(jsonify({"errors": [str(e)]}), 400)
 
     if request.method == 'PATCH':
-
         data = request.get_json()
 
         try:
@@ -138,8 +138,12 @@ def handle_workouts():
         return make_response(jsonify({'error': 'User not authenticated'}), 401)
 
     if request.method == 'GET':
-        workouts = [workout.to_dict() for workout in Workout.query.filter_by(user_id=user_id).all()]
-        return make_response(jsonify(workouts), 200)
+        workouts = Workout.query.options(
+            joinedload(Workout.exercises).joinedload(WorkoutExercise.exercise)
+        ).filter_by(user_id=user_id).all()
+        
+        workouts_dict = [workout.to_dict() for workout in workouts]
+        return make_response(jsonify(workouts_dict), 200)
     
     if request.method == 'POST':
         data = request.get_json()
@@ -150,8 +154,29 @@ def handle_workouts():
             )
             db.session.add(new_workout)
             db.session.commit()
+
+            exercises = data.get('exercises', [])
+            for ex in exercises:
+                exercise_name = ex.get('name')
+                existing_exercise = Exercise.query.filter_by(name=exercise_name).first()
+                if not existing_exercise:
+                    existing_exercise = Exercise(name=exercise_name)
+                    db.session.add(existing_exercise)
+                    db.session.commit()
+
+                for set_data in ex.get('sets', []):
+                    workout_exercise = WorkoutExercise(
+                        workout_id=new_workout.id,
+                        exercise_id=existing_exercise.id,
+                        weight=set_data['weight'],
+                        reps=set_data['reps']
+                    )
+                    db.session.add(workout_exercise)
+            
+            db.session.commit()
             return make_response(jsonify(new_workout.to_dict()), 201)
         except Exception as e:
+            db.session.rollback()
             return make_response(jsonify({'errors': [str(e)]}), 400)
 
 @app.route('/workouts/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
@@ -183,14 +208,12 @@ def handle_workout_by_id(id):
 
 @app.route('/exercises', methods=['GET', 'POST'])
 def handle_exercises():
-
     if request.method == 'GET':
         exercises = [exercise.to_dict() for exercise in Exercise.query.all()]
         return make_response(jsonify(exercises), 200)
     
     if request.method == 'POST':
         data = request.get_json()
-
         try:
             new_exercise = Exercise(
                 name=data['name']
@@ -213,10 +236,8 @@ def handle_exercise_by_id(id):
 
     if request.method == 'PATCH':
         data = request.get_json()
-
         if 'name' in data:
             exercise.name = data['name']
-
         try:
             db.session.commit()
             return make_response(jsonify(exercise.to_dict()), 200)
@@ -252,14 +273,12 @@ def create_workout_exercise():
             return jsonify({'error': 'Missing required fields'}), 400
 
         try:
-
             workout = Workout(date=date, user_id=user_id)
             db.session.add(workout)
             db.session.commit()
 
             for ex in exercises:
                 exercise_name = ex.get('name')
-
                 exercise = Exercise.query.filter_by(name=exercise_name).first()
                 if not exercise:
                     exercise = Exercise(name=exercise_name)
@@ -269,7 +288,6 @@ def create_workout_exercise():
                 for set_data in ex.get('sets', []):
                     weight = set_data.get('weight')
                     reps = set_data.get('reps')
-
                     if weight is None or reps is None:
                         return jsonify({'error': 'Missing set fields'}), 400
 
@@ -282,7 +300,6 @@ def create_workout_exercise():
                     db.session.add(workout_exercise)
             
             db.session.commit()
-
             return jsonify(workout.to_dict()), 201
         except Exception as e:
             db.session.rollback()
