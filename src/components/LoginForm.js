@@ -1,51 +1,61 @@
-import React, { useState } from "react";
-import "./SignUpForm.css"; // Ensure this path is correct
+import React from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import "./SignUpForm.css";
 
 function LoginForm({ onLogin, setShowLogin }) {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    setIsLoading(true);
-    setErrors([]);
-
-    fetch("/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, password }),
-    }).then((r) => {
-      setIsLoading(false);
-      if (r.ok) {
-        r.json().then((user) => {
-          onLogin(user);
-          window.location.href = "/"; 
+  const formik = useFormik({
+    initialValues: {
+      username: "",
+      password: "",
+    },
+    validationSchema: Yup.object({
+      username: Yup.string().required("Username is required"),
+      password: Yup.string().required("Password is required"),
+    }),
+    onSubmit: (values, { setSubmitting, setErrors }) => {
+      setSubmitting(true);
+      fetch("/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      })
+        .then((r) => {
+          setSubmitting(false);
+          if (r.ok) {
+            r.json().then((user) => {
+              onLogin(user);
+              window.location.href = "/";
+            });
+          } else {
+            r.json().then((err) =>
+              setErrors({ server: err.errors ? err.errors : ["Login failed"] })
+            );
+          }
+        })
+        .catch(() => {
+          setSubmitting(false);
+          setErrors({ server: ["Network error"] });
         });
-      } else {
-        r.json().then((err) => setErrors(err.errors ? err.errors : ["Login failed"]));
-      }
-    }).catch(() => {
-      setIsLoading(false);
-      setErrors(["Network error"]);
-    });
-  }
+    },
+  });
 
   return (
     <div className="form-container">
-      <form onSubmit={handleSubmit} className="form">
+      <form onSubmit={formik.handleSubmit} className="form">
         <div>
           <label htmlFor="username">Username</label>
           <input
             type="text"
             id="username"
             autoComplete="off"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            {...formik.getFieldProps("username")}
           />
+          {formik.touched.username && formik.errors.username ? (
+            <div className="error-message">{formik.errors.username}</div>
+          ) : null}
         </div>
         <div>
           <label htmlFor="password">Password</label>
@@ -53,26 +63,30 @@ function LoginForm({ onLogin, setShowLogin }) {
             type="password"
             id="password"
             autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            {...formik.getFieldProps("password")}
           />
+          {formik.touched.password && formik.errors.password ? (
+            <div className="error-message">{formik.errors.password}</div>
+          ) : null}
         </div>
         <div>
-          <button type="submit" disabled={isLoading}>
-            {isLoading ? "Loading..." : "Login"}
+          <button type="submit" disabled={formik.isSubmitting}>
+            {formik.isSubmitting ? "Loading..." : "Login"}
           </button>
         </div>
-        {Array.isArray(errors) && errors.length > 0 && (
+        {formik.errors.server && (
           <div className="error-message">
-            {errors.map((err, index) => (
-              <p key={index}>{err}</p>
-            ))}
+            {Array.isArray(formik.errors.server)
+              ? formik.errors.server.map((err, index) => (
+                  <p key={index}>{err}</p>
+                ))
+              : formik.errors.server}
           </div>
         )}
         <div className="form-link">
           <p>
             Don't have an account? &nbsp;
-            <button onClick={() => setShowLogin(false)}>
+            <button type="button" onClick={() => setShowLogin(false)}>
               Sign Up
             </button>
           </p>

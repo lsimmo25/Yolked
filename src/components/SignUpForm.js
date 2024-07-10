@@ -1,56 +1,69 @@
-import React, { useState } from "react";
-import "./SignUpForm.css"; // Ensure this path is correct
+import React from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import "./SignUpForm.css";
 
 function SignUpForm({ onLogin, setShowLogin }) {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordConfirmation, setPasswordConfirmation] = useState("");
-  const [errors, setErrors] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    setIsLoading(true);
-    setErrors([]);
-
-    fetch("/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username,
-        password,
-        password_confirmation: passwordConfirmation,
-      }),
-    }).then((r) => {
-      setIsLoading(false);
-      if (r.ok) {
-        r.json().then((user) => {
-          onLogin(user);
-          window.location.href = "/"; 
+  const formik = useFormik({
+    initialValues: {
+      username: "",
+      password: "",
+      passwordConfirmation: "",
+    },
+    validationSchema: Yup.object({
+      username: Yup.string().required("Username is required"),
+      password: Yup.string().required("Password is required"),
+      passwordConfirmation: Yup.string()
+        .oneOf([Yup.ref('password'), null], "Passwords must match")
+        .required("Password confirmation is required"),
+    }),
+    onSubmit: (values, { setSubmitting, setErrors }) => {
+      setSubmitting(true);
+      fetch("/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: values.username,
+          password: values.password,
+          password_confirmation: values.passwordConfirmation,
+        }),
+      })
+        .then((r) => {
+          setSubmitting(false);
+          if (r.ok) {
+            r.json().then((user) => {
+              onLogin(user);
+              window.location.href = "/";
+            });
+          } else {
+            r.json().then((err) =>
+              setErrors({ server: err.errors ? err.errors : ["Signup failed"] })
+            );
+          }
+        })
+        .catch(() => {
+          setSubmitting(false);
+          setErrors({ server: ["Network error"] });
         });
-      } else {
-        r.json().then((err) => setErrors(err.errors ? err.errors : ["Signup failed"]));
-      }
-    }).catch(() => {
-      setIsLoading(false);
-      setErrors(["Network error"]);
-    });
-  }
+    },
+  });
 
   return (
     <div className="form-container">
-      <form onSubmit={handleSubmit} className="form">
+      <form onSubmit={formik.handleSubmit} className="form">
         <div>
           <label htmlFor="username">Username</label>
           <input
             type="text"
             id="username"
             autoComplete="off"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            {...formik.getFieldProps("username")}
           />
+          {formik.touched.username && formik.errors.username ? (
+            <div className="error-message">{formik.errors.username}</div>
+          ) : null}
         </div>
         <div>
           <label htmlFor="password">Password</label>
@@ -58,9 +71,11 @@ function SignUpForm({ onLogin, setShowLogin }) {
             type="password"
             id="password"
             autoComplete="new-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            {...formik.getFieldProps("password")}
           />
+          {formik.touched.password && formik.errors.password ? (
+            <div className="error-message">{formik.errors.password}</div>
+          ) : null}
         </div>
         <div>
           <label htmlFor="passwordConfirmation">Confirm Password</label>
@@ -68,26 +83,30 @@ function SignUpForm({ onLogin, setShowLogin }) {
             type="password"
             id="passwordConfirmation"
             autoComplete="new-password"
-            value={passwordConfirmation}
-            onChange={(e) => setPasswordConfirmation(e.target.value)}
+            {...formik.getFieldProps("passwordConfirmation")}
           />
+          {formik.touched.passwordConfirmation && formik.errors.passwordConfirmation ? (
+            <div className="error-message">{formik.errors.passwordConfirmation}</div>
+          ) : null}
         </div>
         <div>
-          <button type="submit" disabled={isLoading}>
-            {isLoading ? "Loading..." : "Sign Up"}
+          <button type="submit" disabled={formik.isSubmitting}>
+            {formik.isSubmitting ? "Loading..." : "Sign Up"}
           </button>
         </div>
-        {Array.isArray(errors) && errors.length > 0 && (
+        {formik.errors.server && (
           <div className="error-message">
-            {errors.map((err, index) => (
-              <p key={index}>{err}</p>
-            ))}
+            {Array.isArray(formik.errors.server)
+              ? formik.errors.server.map((err, index) => (
+                  <p key={index}>{err}</p>
+                ))
+              : formik.errors.server}
           </div>
         )}
         <div className="form-link">
           <p>
             Already have an account? &nbsp;
-            <button onClick={() => setShowLogin(true)}>
+            <button type="button" onClick={() => setShowLogin(true)}>
               Log In
             </button>
           </p>
