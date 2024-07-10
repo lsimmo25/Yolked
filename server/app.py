@@ -61,7 +61,7 @@ def login():
     else:
         return make_response(jsonify({'errors': 'Invalid username or password'}), 400)
 
-@app.route('/checksession', methods=['GET'])
+@app.route('/check_session', methods=['GET'])
 def check_session():
     user_id = session.get('user_id')
     if user_id:
