@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import './NavBar.css';
 
 const NavBar = ({ user, setUser }) => {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -19,17 +21,26 @@ const NavBar = ({ user, setUser }) => {
       });
   };
 
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
+  };
+
   return (
     <nav>
       <ul>
         <li><Link to="/">Home</Link></li>
         <li><Link to="/workouts">Workouts</Link></li>
-        <li><Link to="/profile">Profile</Link></li>
         {user ? (
-          <>
-            <li><button onClick={handleLogout}>Logout</button></li>
-            <li>{user.username}</li>
-          </>
+          <li className="user-menu" onClick={toggleDropdown}>
+            {user.username}
+            <span className="arrow">▼</span>
+            {dropdownOpen && (
+              <div className="dropdown">
+                <Link to="/profile">Profile</Link>
+                <button className="logout" onClick={handleLogout}>Logout</button>
+              </div>
+            )}
+          </li>
         ) : (
           <li><Link to="/login">Login</Link></li>
         )}
