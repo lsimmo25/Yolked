@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from sqlalchemy.orm import joinedload
 from flask import request, Flask, make_response, jsonify, session
 from flask_session import Session
 
@@ -138,13 +137,32 @@ def handle_workouts():
         return make_response(jsonify({'error': 'User not authenticated'}), 401)
 
     if request.method == 'GET':
-        workouts = Workout.query.options(
-            joinedload(Workout.exercises).joinedload(WorkoutExercise.exercise)
-        ).filter_by(user_id=user_id).all()
-        
-        workouts_dict = [workout.to_dict() for workout in workouts]
-        return make_response(jsonify(workouts_dict), 200)
-    
+        workouts = Workout.query.filter_by(user_id=user_id).all()
+        workouts_dict = []
+
+        for workout in workouts:
+            workout_data = workout.to_dict()
+            workout_data['exercises'] = []
+
+            workout_exercises = WorkoutExercise.query.filter_by(workout_id=workout.id).all()
+            exercises_dict = {}
+            for we in workout_exercises:
+                exercise = Exercise.query.get(we.exercise_id)
+                if exercise.id not in exercises_dict:
+                    exercise_data = exercise.to_dict()
+                    exercise_data['sets'] = []
+                    exercises_dict[exercise.id] = exercise_data
+                exercises_dict[exercise.id]['sets'].append({
+                    'id': we.id,
+                    'weight': we.weight,
+                    'reps': we.reps
+                })
+
+            workout_data['exercises'] = list(exercises_dict.values())
+            workouts_dict.append(workout_data)
+
+        return jsonify(workouts_dict), 200
+
     if request.method == 'POST':
         data = request.get_json()
         try:
@@ -174,7 +192,26 @@ def handle_workouts():
                     db.session.add(workout_exercise)
             
             db.session.commit()
-            return make_response(jsonify(new_workout.to_dict()), 201)
+            new_workout_data = new_workout.to_dict()
+            new_workout_data['exercises'] = []
+
+            workout_exercises = WorkoutExercise.query.filter_by(workout_id=new_workout.id).all()
+            exercises_dict = {}
+            for we in workout_exercises:
+                exercise = Exercise.query.get(we.exercise_id)
+                if exercise.id not in exercises_dict:
+                    exercise_data = exercise.to_dict()
+                    exercise_data['sets'] = []
+                    exercises_dict[exercise.id] = exercise_data
+                exercises_dict[exercise.id]['sets'].append({
+                    'id': we.id,
+                    'weight': we.weight,
+                    'reps': we.reps
+                })
+
+            new_workout_data['exercises'] = list(exercises_dict.values())
+
+            return make_response(jsonify(new_workout_data), 201)
         except Exception as e:
             db.session.rollback()
             return make_response(jsonify({'errors': [str(e)]}), 400)
