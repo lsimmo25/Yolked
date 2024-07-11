@@ -51,8 +51,8 @@ function SignUpForm({ onLogin, setShowLogin }) {
   });
 
   return (
-    <div className="form-container">
-      <form onSubmit={formik.handleSubmit} className="form">
+    <div className="signup-container">
+      <form onSubmit={formik.handleSubmit} className="signup-form">
         <div>
           <label htmlFor="username">Username</label>
           <input
@@ -103,7 +103,7 @@ function SignUpForm({ onLogin, setShowLogin }) {
               : formik.errors.server}
           </div>
         )}
-        <div className="form-link">
+        <div className="signup-login-link">
           <p>
             Already have an account? &nbsp;
             <button type="button" onClick={() => setShowLogin(true)}>

@@ -1,0 +1,99 @@
+.workout-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+}
+
+.form-container,
+.workout-list {
+  width: 48%;
+}
+
+.form-container {
+  background-color: #1e1e1e;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.workout-list {
+  background-color: #1e1e1e;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.workout-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.workout-item ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.workout-list h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #e0e0e0;
+}
+
+.workout-item {
+  background-color: #2a2a2a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  padding: 15px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  color: #e0e0e0;
+}
+
+.workout-item ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.workout-item li {
+  margin-bottom: 10px;
+  color: #e0e0e0;
+}
+
+.exercise-item {
+  background-color: #333;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+  color: #e0e0e0;
+}
+
+.exercise-item ul {
+  padding-left: 20px;
+}
+
+.set-item {
+  background-color: #444;
+  border-radius: 5px;
+  padding: 5px;
+  margin-bottom: 5px;
+  color: #e0e0e0;
+}
+
+.error-message {
+  color: red;
+}
+
+.delete-button {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.delete-button:hover {
+  background-color: #ff1a1a;
+}
