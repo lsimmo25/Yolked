@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./WorkoutHistory.css";
 
-const WorkoutHistory = () => {
+const WorkoutHistory = ({ workouts, setWorkouts }) => {
   const today = new Date().toISOString().split('T')[0];
-  const [workouts, setWorkouts] = useState([]);
   const [filteredWorkouts, setFilteredWorkouts] = useState([]);
   const [selectedDate, setSelectedDate] = useState(today);
 
