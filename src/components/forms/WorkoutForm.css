@@ -109,17 +109,15 @@
   display: flex;
   align-items: center;
   margin-bottom: 20px;
-  min-width: 5%;
+  width: 20%;
 }
 
 .form-row input {
   padding: 5px;
   border-radius: 5px;
-  border: 1px solid #444;
-  background-color: #2a2a2a;
-  color: #e0e0e0;
-  width: 5px;
-  height: 8px;
+  border: 1px solid #333;
+  height: 5px;
+  width: 20%;
 }
 
 .form-row label {
@@ -168,10 +166,19 @@ th {
   cursor: pointer;
 }
 
-.submit-container {
+.button-container {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
+  gap: 10px;
   width: 100%;
+}
+
+.add-exercise {
+  background-color: blue;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
 }
 
 .submit {
@@ -180,30 +187,4 @@ th {
   border: none;
   padding: 10px 20px;
   cursor: pointer;
-}
-
-.date-picker {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.date-picker label {
-  margin-right: 10px;
-  color: #e0e0e0;
-}
-
-.date-picker input {
-  padding: 5px;
-  border-radius: 5px;
-  border: 1px solid #333;
-  background-color: #1e1e1e;
-  color: #e0e0e0;
-}
-
-.date-picker input::placeholder {
-  color: #e0e0e0;
-}
-
-.date-picker input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(1);
 }

@@ -59,7 +59,7 @@ const WorkoutForm = ({ updateWorkouts }) => {
         >
             {({ values }) => (
                 <Form className="form-container">
-                    <h2>Enter Workout</h2>
+                    <h2>Add Workout</h2>
                     <div className="form-row">
                         <label htmlFor="date">Date:</label>
                         <Field name="date" type="date" />
@@ -138,15 +138,15 @@ const WorkoutForm = ({ updateWorkouts }) => {
                                         ))}
                                     </tbody>
                                 </table>
-                                <button type="button" onClick={() => push({ name: "", sets: [{ weight: "", reps: "" }] })}>
-                                    Add Exercise
-                                </button>
+                                <div className="button-container">
+                                  <button type="button" onClick={() => push({ name: "", sets: [{ weight: "", reps: "" }] })} className="add-exercise">
+                                      Add Exercise
+                                  </button>
+                                  <button type="submit" className="submit">Submit</button>
+                                </div>
                             </div>
                         )}
                     </FieldArray>
-                    <div className="submit-container">
-                        <button type="submit" className="submit">Submit</button>
-                    </div>
                 </Form>
             )}
         </Formik>
