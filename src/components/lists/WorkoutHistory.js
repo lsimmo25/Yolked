@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import "./WorkoutHistory.css";
 
 const WorkoutHistory = () => {
+  const today = new Date().toISOString().split('T')[0];
   const [workouts, setWorkouts] = useState([]);
   const [filteredWorkouts, setFilteredWorkouts] = useState([]);
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState(today);
 
   const fetchWorkouts = () => {
     fetch("/workouts")
@@ -14,7 +15,7 @@ const WorkoutHistory = () => {
           console.error(data.error);
         } else {
           setWorkouts(data);
-          setFilteredWorkouts(data); // Initialize filtered workouts
+          setFilteredWorkouts(data.filter((workout) => workout.date === today));
         }
       })
       .catch((error) => {
