@@ -1,55 +1,209 @@
+.workout-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+}
+
+.form-container,
+.workout-list {
+  width: 48%;
+}
+
 .form-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 48%;
-  }
-  
-  .form-row {
-    margin-bottom: 20px;
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-  }
-  
-  th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-    width: 80%;
-  }
-  
-  th {
-    background-color: #f2f2f2;
-  }
-  
-  .error-message {
-    color: red;
-    font-size: 12px;
-  }
-  
-  .remove-exercise {
-    background-color: red;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-  }
-  
-  .submit-container {
-    display: flex;
-    justify-content: flex-end;
-    width: 100%;
-  }
-  
-  .submit {
-    background-color: blue;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-  }
-  
+  background-color: #1e1e1e;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.workout-list {
+  background-color: #1e1e1e;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.workout-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.workout-item ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.workout-list h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #e0e0e0;
+}
+
+.workout-item {
+  background-color: #2a2a2a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  padding: 15px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  color: #e0e0e0;
+}
+
+.workout-item ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.workout-item li {
+  margin-bottom: 10px;
+  color: #e0e0e0;
+}
+
+.exercise-item {
+  background-color: #333;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+  color: #e0e0e0;
+}
+
+.exercise-item ul {
+  padding-left: 20px;
+}
+
+.set-item {
+  background-color: #444;
+  border-radius: 5px;
+  padding: 5px;
+  margin-bottom: 5px;
+  color: #e0e0e0;
+}
+
+.error-message {
+  color: red;
+}
+
+.delete-button {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.delete-button:hover {
+  background-color: #ff1a1a;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 48%;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  min-width: 5%;
+}
+
+.form-row input {
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #444;
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+  width: 5px;
+  height: 8px;
+}
+
+.form-row label {
+  flex: 1;
+  padding: 5px;
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+}
+
+.form-row input::placeholder {
+  color: #e0e0e0;
+}
+
+.form-row input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+  width: 80%;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+.error-message {
+  color: red;
+  font-size: 12px;
+  padding-left: 10px;
+}
+
+.remove-exercise {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.submit-container {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.submit {
+  background-color: blue;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.date-picker {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.date-picker label {
+  margin-right: 10px;
+  color: #e0e0e0;
+}
+
+.date-picker input {
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #333;
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+}
+
+.date-picker input::placeholder {
+  color: #e0e0e0;
+}
+
+.date-picker input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}

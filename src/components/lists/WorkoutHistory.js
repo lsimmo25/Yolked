@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./WorkoutHistory.css";
 
-const WorkoutHistory = ({ workouts, setWorkouts }) => {
+const WorkoutHistory = () => {
+  const [workouts, setWorkouts] = useState([]);
+  const [filteredWorkouts, setFilteredWorkouts] = useState([]);
+  const [selectedDate, setSelectedDate] = useState("");
+
   const fetchWorkouts = () => {
     fetch("/workouts")
       .then((response) => response.json())
@@ -10,6 +14,7 @@ const WorkoutHistory = ({ workouts, setWorkouts }) => {
           console.error(data.error);
         } else {
           setWorkouts(data);
+          setFilteredWorkouts(data); // Initialize filtered workouts
         }
       })
       .catch((error) => {
@@ -19,7 +24,17 @@ const WorkoutHistory = ({ workouts, setWorkouts }) => {
 
   useEffect(() => {
     fetchWorkouts();
-  }, [setWorkouts]);
+  }, []);
+
+  const handleDateChange = (event) => {
+    const date = event.target.value;
+    setSelectedDate(date);
+    if (date) {
+      setFilteredWorkouts(workouts.filter((workout) => workout.date === date));
+    } else {
+      setFilteredWorkouts(workouts);
+    }
+  };
 
   const handleDelete = (id) => {
     fetch(`/workouts/${id}`, {
@@ -27,8 +42,8 @@ const WorkoutHistory = ({ workouts, setWorkouts }) => {
     })
       .then((response) => {
         if (response.ok) {
-          // Optimistically update state
           setWorkouts((prevWorkouts) => prevWorkouts.filter(workout => workout.id !== id));
+          setFilteredWorkouts((prevWorkouts) => prevWorkouts.filter(workout => workout.id !== id));
         } else {
           console.error("Failed to delete workout");
         }
@@ -41,11 +56,20 @@ const WorkoutHistory = ({ workouts, setWorkouts }) => {
   return (
     <div className="workout-list">
       <h2>Workout History</h2>
-      {workouts.length === 0 ? (
+      <div className="date-picker">
+        <label htmlFor="date">Select Date: </label>
+        <input
+          type="date"
+          id="date"
+          value={selectedDate}
+          onChange={handleDateChange}
+        />
+      </div>
+      {filteredWorkouts.length === 0 ? (
         <p>No workouts found</p>
       ) : (
         <ul>
-          {workouts.map((workout) => (
+          {filteredWorkouts.map((workout) => (
             <li key={workout.id} className="workout-item">
               <div className="workout-header">
                 <strong>{workout.date}</strong>
