@@ -9,7 +9,7 @@
 
 .signup-logo {
   width: 300px;
-  margin-bottom: -30px;
+  margin-bottom: -10px;
 }
 
 .signup-form {
@@ -78,6 +78,7 @@
 .signup-login-link button:hover {
   color: #0056b3;
 }
+
 
 h1 {
   color: #e0e0e0;

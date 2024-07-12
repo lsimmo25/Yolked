@@ -8,8 +8,8 @@
 }
 
 .login-logo {
-  width: 300px; /* Adjust this value to the desired width */
-  margin-bottom: 20px; /* Space between the logo and the form */
+  width: 300px;
+  margin-bottom: -15px;
 }
 
 .login-form {
