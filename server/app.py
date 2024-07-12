@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-from flask import request, Flask, make_response, jsonify, session
+from flask import request, make_response, jsonify, session
 from flask_session import Session
 
 # Local imports
-from config import app, db, api
+from config import app, db
 
 # Model imports
 from models import User, Workout, Exercise, WorkoutExercise
