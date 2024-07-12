@@ -115,7 +115,7 @@ const WorkoutForm = ({ updateWorkouts }) => {
                                     <ErrorMessage name={`exercises.${exerciseIndex}.sets.${setIndex + 1}.reps`} component="div" className="error-message" />
                                   </td>
                                   <td>
-                                    <button type="button" onClick={() => removeSet(setIndex + 1)}>
+                                    <button type="button" className="remove-set" onClick={() => removeSet(setIndex + 1)}>
                                       x
                                     </button>
                                   </td>

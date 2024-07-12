@@ -1,3 +1,5 @@
+// WorkoutHistory.js
+
 import React, { useEffect, useState } from "react";
 import "./WorkoutHistory.css";
 
@@ -80,7 +82,7 @@ const WorkoutHistory = ({ workouts, setWorkouts }) => {
             <li key={workout.id} className="workout-item">
               <div className="workout-header">
                 <strong>{workout.date}</strong>
-                <button onClick={() => handleDelete(workout.id)} className="delete-button">x</button>
+                <button onClick={() => handleDelete(workout.id)} className="delete-button">Delete Workout</button>
               </div>
               <ul>
                 {workout.exercises && workout.exercises.length > 0 ? (

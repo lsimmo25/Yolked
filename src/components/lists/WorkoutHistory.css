@@ -102,8 +102,20 @@
   border-radius: 5px;
   padding: 5px 10px;
   cursor: pointer;
+  margin-left: 10px;
 }
 
 .delete-button:hover {
   background-color: #ff1a1a;
+}
+
+.workout-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+}
+
+.workout-header strong {
+  flex-grow: 1;
 }
