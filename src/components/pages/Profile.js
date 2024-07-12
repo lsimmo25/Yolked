@@ -5,6 +5,7 @@ const Profile = ({ user, updateUser }) => {
   const [editing, setEditing] = useState(false);
   const [image_url, setImageUrl] = useState(user.image_url);
   const [bio, setBio] = useState(user.bio);
+  const [username, setUsername] = useState(user.username);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -13,7 +14,7 @@ const Profile = ({ user, updateUser }) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ image_url, bio }),
+      body: JSON.stringify({ username, image_url, bio }),
     })
       .then((r) => r.json())
       .then((updatedUser) => {
@@ -56,6 +57,15 @@ const Profile = ({ user, updateUser }) => {
         </button>
         {editing && (
           <form onSubmit={handleSubmit} className="edit-form">
+            <div className="form-group">
+              <label htmlFor="username">New username:</label>
+              <input
+                type="text"
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
             <div className="form-group">
               <label htmlFor="image_url">Profile Picture URL:</label>
               <input

@@ -1,5 +1,3 @@
-// WorkoutHistory.js
-
 import React, { useEffect, useState } from "react";
 import "./WorkoutHistory.css";
 
@@ -16,7 +14,11 @@ const WorkoutHistory = ({ workouts, setWorkouts }) => {
           console.error(data.error);
         } else {
           setWorkouts(data);
-          setFilteredWorkouts(data.filter((workout) => workout.date === today));
+          if (selectedDate) {
+            setFilteredWorkouts(data.filter((workout) => workout.date === selectedDate));
+          } else {
+            setFilteredWorkouts(data);
+          }
         }
       })
       .catch((error) => {
@@ -28,11 +30,15 @@ const WorkoutHistory = ({ workouts, setWorkouts }) => {
     fetchWorkouts();
   }, []);
 
+  useEffect(() => {
+    setFilteredWorkouts(workouts.filter(workout => workout.date === selectedDate));
+  }, [workouts, selectedDate]);
+
   const handleDateChange = (event) => {
     const date = event.target.value;
     setSelectedDate(date);
     if (date) {
-      setFilteredWorkouts(workouts.filter((workout) => workout.date === date));
+      setFilteredWorkouts(workouts.filter(workout => workout.date === date));
     } else {
       setFilteredWorkouts(workouts);
     }
@@ -44,8 +50,7 @@ const WorkoutHistory = ({ workouts, setWorkouts }) => {
     })
       .then((response) => {
         if (response.ok) {
-          setWorkouts((prevWorkouts) => prevWorkouts.filter(workout => workout.id !== id));
-          setFilteredWorkouts((prevWorkouts) => prevWorkouts.filter(workout => workout.id !== id));
+          setWorkouts(prevWorkouts => prevWorkouts.filter(workout => workout.id !== id));
         } else {
           console.error("Failed to delete workout");
         }
