@@ -25,6 +25,25 @@ const Profile = ({ user, updateUser }) => {
       });
   };
 
+  const handleDeleteAccount = () => {
+    if (window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+      fetch(`/users/${user.id}`, {
+        method: "DELETE",
+      })
+        .then((response) => {
+          if (response.ok) {
+            updateUser(null);
+            window.location.href = "/signup";
+          } else {
+            console.error("Failed to delete account");
+          }
+        })
+        .catch((error) => {
+          console.error("Error deleting account:", error);
+        });
+    }
+  };
+
   return (
     <div className="profile-container">
       <h1>Profile Page</h1>
@@ -56,6 +75,11 @@ const Profile = ({ user, updateUser }) => {
             </div>
             <button type="submit" className="save-button">Save</button>
           </form>
+        )}
+        {editing && (
+          <button onClick={handleDeleteAccount} className="delete-button">
+            Delete Account
+          </button>
         )}
       </div>
     </div>
