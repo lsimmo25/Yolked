@@ -26,7 +26,7 @@ function App() {
       <NavBar user={user} setUser={setUser} />
       <main className="content">
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home user={user} setUser={setUser} />} />
           <Route path="/workouts" element={<Workouts />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login onLogin={setUser} />} />

@@ -1,8 +1,8 @@
 import React from 'react';
 
-const Home = () => (
+const Home = ({ user, setUser }) => (
   <div>
-    <h1 style={{ marginLeft: '20px', color: '#fff' }}>Home Page</h1>
+    <h1 style={{ marginLeft: '20px', color: '#fff' }}>Hi, {user.username}!</h1>
   </div>
 );
 
