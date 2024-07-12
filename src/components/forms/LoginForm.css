@@ -1,9 +1,15 @@
 .login-container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100vh;
   background-color: #121212;
+}
+
+.login-logo {
+  width: 300px; /* Adjust this value to the desired width */
+  margin-bottom: 20px; /* Space between the logo and the form */
 }
 
 .login-form {
