@@ -1,3 +1,5 @@
+/* WorkoutHistory.css */
+
 .date-picker {
   text-align: center;
   margin-bottom: 20px;
@@ -26,6 +28,7 @@
 
 .workout-container {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: flex-start;
   padding: 20px;
@@ -33,21 +36,13 @@
 
 .form-container,
 .workout-list {
-  width: 48%;
-}
-
-.form-container {
+  flex: 1 1 48%;
   background-color: #1e1e1e;
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.workout-list {
-  background-color: #1e1e1e;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  color: #e0e0e0;
+  margin-bottom: 20px;
 }
 
 .workout-list ul {
@@ -55,15 +50,9 @@
   padding: 0;
 }
 
-.workout-item ul {
-  list-style-type: none;
-  padding: 0;
-}
-
 .workout-list h2 {
   text-align: center;
   margin-bottom: 20px;
-  color: #e0e0e0;
 }
 
 .workout-item {
@@ -73,7 +62,6 @@
   margin-bottom: 20px;
   padding: 15px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  color: #e0e0e0;
 }
 
 .workout-item ul {
@@ -83,7 +71,6 @@
 
 .workout-item li {
   margin-bottom: 10px;
-  color: #e0e0e0;
 }
 
 .exercise-item {
@@ -91,7 +78,6 @@
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 10px;
-  color: #e0e0e0;
 }
 
 .exercise-item ul {
@@ -103,7 +89,6 @@
   border-radius: 5px;
   padding: 5px;
   margin-bottom: 5px;
-  color: #e0e0e0;
 }
 
 .error-message {
@@ -117,65 +102,8 @@
   border-radius: 5px;
   padding: 5px 10px;
   cursor: pointer;
-  margin-left: 10px;
 }
 
 .delete-button:hover {
   background-color: #ff1a1a;
 }
-
-.form-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 48%;
-}
-
-.form-row {
-  margin-bottom: 20px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
-}
-
-th, td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
-  width: 80%;
-}
-
-th {
-  background-color: #f2f2f2;
-}
-
-.error-message {
-  color: red;
-  font-size: 12px;
-}
-
-.remove-exercise {
-  background-color: red;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
-}
-
-.submit-container {
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
-}
-
-.submit {
-  background-color: blue;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-}
-
