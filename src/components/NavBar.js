@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './NavBar.css';
+import logo from '../images/Egg Kettlebell.png';
 
 const NavBar = ({ user, setUser }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -28,7 +29,11 @@ const NavBar = ({ user, setUser }) => {
   return (
     <nav>
       <ul>
-        <li><Link to="/">Home</Link></li>
+        <li>
+          <Link to="/">
+          <img src={logo} alt="Logo" className="nav-logo" />
+          Home
+        </Link></li>
         <li><Link to="/workouts">Workouts</Link></li>
         {user ? (
           <li className="user-menu" onClick={toggleDropdown}>

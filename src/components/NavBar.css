@@ -65,3 +65,9 @@ nav .dropdown a, nav .dropdown button {
 nav .dropdown a:hover, nav .dropdown button:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
+
+.nav-logo {
+  height: 30px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
