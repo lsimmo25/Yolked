@@ -3,6 +3,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import "./SignUpForm.css";
 import logo from '../../images/Egg_Signup.png';
+import default_picture from '../../images/DefaultProfilePic.png'
 
 function SignUpForm({ onLogin, setShowLogin }) {
   const formik = useFormik({
@@ -29,6 +30,8 @@ function SignUpForm({ onLogin, setShowLogin }) {
           username: values.username,
           password: values.password,
           password_confirmation: values.passwordConfirmation,
+          image_url: default_picture,
+          bio: "Tell us about yourself!"
         }),
       })
         .then((r) => {

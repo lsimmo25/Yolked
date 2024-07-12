@@ -27,7 +27,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home user={user} setUser={setUser} />} />
           <Route path="/workouts" element={<Workouts />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile" element={<Profile user={user} updateUser={setUser}/>} />
           <Route path="/login" element={<Login onLogin={setUser} />} />
         </Routes>
       </main>

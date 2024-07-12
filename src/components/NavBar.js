@@ -37,6 +37,7 @@ const NavBar = ({ user, setUser }) => {
         <li><Link to="/workouts">Workouts</Link></li>
         {user ? (
           <li className="user-menu" onClick={toggleDropdown}>
+            <img src={user.image_url} alt="prof_pic" className="prof-pic" />
             {user.username}
             <span className="arrow">▼</span>
             {dropdownOpen && (

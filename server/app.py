@@ -37,8 +37,8 @@ def signup():
     try:
         new_user = User(
             username=username,
-            image_url=image_url,  # optional
-            bio=bio  # optional
+            image_url=image_url,
+            bio=bio
         )
 
         new_user.password_hash = password
