@@ -32,16 +32,39 @@ function SignUpForm({ onLogin, setShowLogin }) {
         }),
       })
         .then((r) => {
-          setSubmitting(false);
           if (r.ok) {
             r.json().then((user) => {
-              onLogin(user);
-              window.location.href = "/";
+              fetch("/login", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  username: values.username,
+                  password: values.password,
+                }),
+              })
+                .then((r) => {
+                  setSubmitting(false);
+                  if (r.ok) {
+                    r.json().then((user) => {
+                      onLogin(user);
+                      window.location.href = "/";
+                    });
+                  } else {
+                    setErrors({ server: ["Login failed"] });
+                  }
+                })
+                .catch(() => {
+                  setSubmitting(false);
+                  setErrors({ server: ["Network error"] });
+                });
             });
           } else {
             r.json().then((err) =>
               setErrors({ server: err.errors ? err.errors : ["Signup failed"] })
             );
+            setSubmitting(false);
           }
         })
         .catch(() => {
