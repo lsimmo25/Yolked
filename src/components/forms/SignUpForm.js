@@ -2,6 +2,7 @@ import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import "./SignUpForm.css";
+import logo from '../../images/Egg_Signup.png';
 
 function SignUpForm({ onLogin, setShowLogin }) {
   const formik = useFormik({
@@ -52,6 +53,8 @@ function SignUpForm({ onLogin, setShowLogin }) {
 
   return (
     <div className="signup-container">
+      <h1>Yolked</h1>
+      <img src={logo} alt="Logo" className="signup-logo" />
       <form onSubmit={formik.handleSubmit} className="signup-form">
         <div>
           <label htmlFor="username">Username</label>

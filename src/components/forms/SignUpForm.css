@@ -1,9 +1,15 @@
 .signup-container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100vh;
   background-color: #121212;
+}
+
+.signup-logo {
+  width: 300px;
+  margin-bottom: -30px;
 }
 
 .signup-form {
@@ -71,4 +77,10 @@
 
 .signup-login-link button:hover {
   color: #0056b3;
+}
+
+h1 {
+  color: #e0e0e0;
+  text-align: center;
+  margin-bottom: 20px;
 }

@@ -5,7 +5,6 @@ import Home from './pages/Home';
 import Workouts from './pages/Workouts';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
-import Signup from './pages/Signup';
 import './App.css';
 
 function App() {
@@ -30,7 +29,6 @@ function App() {
           <Route path="/workouts" element={<Workouts />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login onLogin={setUser} />} />
-          <Route path="/signup" element={<Signup onLogin={setUser} />} />
         </Routes>
       </main>
     </Router>

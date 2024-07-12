@@ -45,7 +45,7 @@ function LoginForm({ onLogin, setShowLogin }) {
 
   return (
     <div className="login-container">
-      <h1>Get Yolked</h1>
+      <h1>Yolked</h1>
        <img src={logo} alt="Logo" className="login-logo" />
       <form onSubmit={formik.handleSubmit} className="login-form">
         <div>
