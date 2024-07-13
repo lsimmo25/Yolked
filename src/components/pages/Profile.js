@@ -1,46 +1,58 @@
 import React, { useState } from 'react';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 import './Profile.css';
 
 const Profile = ({ user, updateUser }) => {
   const [editing, setEditing] = useState(false);
-  const [image_url, setImageUrl] = useState(user.image_url);
-  const [bio, setBio] = useState(user.bio);
-  const [username, setUsername] = useState(user.username);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    fetch(`/users/${user.id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, image_url, bio }),
-    })
-      .then((r) => r.json())
-      .then((updatedUser) => {
-        updateUser(updatedUser);
-        setEditing(false);
+  const formik = useFormik({
+    initialValues: {
+      username: user.username,
+      image_url: user.image_url,
+      bio: user.bio,
+    },
+    validationSchema: Yup.object({
+      username: Yup.string().required('Username is required'),
+      image_url: Yup.string().url('Invalid URL'),
+      bio: Yup.string(),
+    }),
+    onSubmit: (values, { setSubmitting }) => {
+      fetch(`/users/${user.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
       })
-      .catch((error) => {
-        console.error("Error updating profile:", error);
-      });
-  };
+        .then((r) => r.json())
+        .then((updatedUser) => {
+          updateUser(updatedUser);
+          setEditing(false);
+          setSubmitting(false);
+        })
+        .catch((error) => {
+          console.error('Error updating profile:', error);
+          setSubmitting(false);
+        });
+    },
+  });
 
   const handleDeleteAccount = () => {
-    if (window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+    if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
       fetch(`/users/${user.id}`, {
-        method: "DELETE",
+        method: 'DELETE',
       })
         .then((response) => {
           if (response.ok) {
             updateUser(null);
-            window.location.href = "/signup";
+            window.location.href = '/signup';
           } else {
-            console.error("Failed to delete account");
+            console.error('Failed to delete account');
           }
         })
         .catch((error) => {
-          console.error("Error deleting account:", error);
+          console.error('Error deleting account:', error);
         });
     }
   };
@@ -53,37 +65,45 @@ const Profile = ({ user, updateUser }) => {
         <h2>{user.username}</h2>
         <p>{user.bio}</p>
         <button onClick={() => setEditing(!editing)} className="edit-button">
-          {editing ? "Cancel" : "Edit Profile"}
+          {editing ? 'Cancel' : 'Edit Profile'}
         </button>
         {editing && (
-          <form onSubmit={handleSubmit} className="edit-form">
+          <form onSubmit={formik.handleSubmit} className="edit-form">
             <div className="form-group">
               <label htmlFor="username">New username:</label>
               <input
                 type="text"
                 id="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                {...formik.getFieldProps('username')}
               />
+              {formik.touched.username && formik.errors.username ? (
+                <div className="error-message">{formik.errors.username}</div>
+              ) : null}
             </div>
             <div className="form-group">
               <label htmlFor="image_url">Profile Picture URL:</label>
               <input
                 type="text"
                 id="image_url"
-                value={image_url}
-                onChange={(e) => setImageUrl(e.target.value)}
+                {...formik.getFieldProps('image_url')}
               />
+              {formik.touched.image_url && formik.errors.image_url ? (
+                <div className="error-message">{formik.errors.image_url}</div>
+              ) : null}
             </div>
             <div className="form-group">
               <label htmlFor="bio">Bio:</label>
               <textarea
                 id="bio"
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
+                {...formik.getFieldProps('bio')}
               />
+              {formik.touched.bio && formik.errors.bio ? (
+                <div className="error-message">{formik.errors.bio}</div>
+              ) : null}
             </div>
-            <button type="submit" className="save-button">Save</button>
+            <button type="submit" className="save-button" disabled={formik.isSubmitting}>
+              {formik.isSubmitting ? 'Saving...' : 'Save'}
+            </button>
           </form>
         )}
         {editing && (
