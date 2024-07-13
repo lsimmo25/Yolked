@@ -83,16 +83,16 @@ if __name__ == '__main__':
         db.drop_all()
         db.create_all()
         
-        # Create users
-        users = create_users(fake, num_users=10)
+        # # Create users
+        # users = create_users(fake, num_users=10)
         
-        # Create exercises
-        exercises = create_exercises(fake, num_exercises=10)
+        # # Create exercises
+        # exercises = create_exercises(fake, num_exercises=10)
         
-        # Create workouts
-        workouts = create_workouts(fake, users, num_workouts=50)
+        # # Create workouts
+        # workouts = create_workouts(fake, users, num_workouts=50)
         
-        # Create workout exercises
-        create_workout_exercises(fake, workouts, exercises, num_workout_exercises=100)
+        # # Create workout exercises
+        # create_workout_exercises(fake, workouts, exercises, num_workout_exercises=100)
         
         print("Seeding complete!")
