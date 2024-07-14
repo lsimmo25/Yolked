@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+# seed.py
 
 # Standard library imports
 from random import randint, choice as rc

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+# app.py
 
 from flask import request, make_response, jsonify, session
 from flask_session import Session
@@ -19,10 +19,12 @@ def get_current_user_id():
 
 # Routes
 
+# Home Page
 @app.route('/')
 def index():
     return '<h1>Project Server</h1>'
 
+# Signup Page
 @app.route('/signup', methods=['POST'])
 def signup():
     data = request.get_json()
@@ -49,6 +51,7 @@ def signup():
     except Exception as e:
         return make_response(jsonify({"errors": [str(e)]}), 400)
 
+# Login Page
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -63,6 +66,7 @@ def login():
     else:
         return make_response(jsonify({'errors': 'Invalid username or password'}), 400)
 
+# Check session for logged in user
 @app.route('/check_session', methods=['GET'])
 def check_session():
     user_id = session.get('user_id')
@@ -72,11 +76,13 @@ def check_session():
             return make_response(jsonify(user.to_dict()), 200)
     return make_response(jsonify({'message': 'Not logged in'}), 401)
 
+# Log out request
 @app.route('/logout', methods=['POST'])
 def logout():
     session.pop('user_id', None)
     return make_response(jsonify({'message': 'Logout successful'}), 200)
 
+# Get Users
 @app.route('/users', methods=['GET'])
 def handle_users():
     users = [user.to_dict() for user in User.query.all()]
@@ -86,7 +92,8 @@ def handle_users():
             return make_response(jsonify(users), 200)
         except Exception as e:
             return make_response(jsonify({"errors": [str(e)]}))
-        
+
+# Get user by ID -- Edit and Delete Requests      
 @app.route('/users/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def handle_user_by_id(id):
     user = User.query.filter_by(id=id).first()
@@ -128,7 +135,8 @@ def handle_user_by_id(id):
             return make_response(jsonify({"message": "User deleted successfully"}), 200)
         except Exception as e:
             return make_response(jsonify({"errors": [str(e)]}), 400)
-        
+
+# Get Workouts / Create Workouts        
 @app.route('/workouts', methods=['GET', 'POST'])
 def handle_workouts():
     user_id = get_current_user_id()
@@ -216,6 +224,7 @@ def handle_workouts():
             db.session.rollback()
             return make_response(jsonify({'errors': [str(e)]}), 400)
 
+# Get workout by ID / handle edit and delete requests
 @app.route('/workouts/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def handle_workout_by_id(id):
     workout = Workout.query.filter_by(id=id).first()
@@ -243,6 +252,7 @@ def handle_workout_by_id(id):
         except Exception as e:
             return make_response(jsonify({"errors": [str(e)]}), 400)
 
+# Get / Add exercises
 @app.route('/exercises', methods=['GET', 'POST'])
 def handle_exercises():
     if request.method == 'GET':
@@ -260,7 +270,8 @@ def handle_exercises():
             return make_response(new_exercise.to_dict(), 201)
         except Exception as e:
             return make_response(jsonify({"errors": [str(e)]}), 400)
-        
+
+# Get Exercise By Id / Edit and Delete Requests       
 @app.route('/exercises/<int:id>', methods=['GET', 'PATCH', 'DELETE'])
 def handle_exercise_by_id(id):
     exercise = Exercise.query.filter_by(id=id).first()
@@ -289,6 +300,7 @@ def handle_exercise_by_id(id):
         except Exception as e:
             return make_response(jsonify({"errors": [str(e)]}), 400)
 
+# Relate Workouts with exercise - create requests
 @app.route('/workout_exercises', methods=['GET', 'POST'])
 def create_workout_exercise():
     user_id = get_current_user_id()
