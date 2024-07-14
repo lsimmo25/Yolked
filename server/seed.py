@@ -14,7 +14,7 @@ def create_users(fake, num_users=10):
     users = []
     for _ in range(num_users):
         username = fake.user_name()
-        password = 'password'  # Default password for all users
+        password = 'password'
         image_url = fake.image_url()
         bio = fake.text(max_nb_chars=200)
         
@@ -23,7 +23,7 @@ def create_users(fake, num_users=10):
             image_url=image_url,
             bio=bio
         )
-        user.password_hash = password  # Set the password hash
+        user.password_hash = password
         users.append(user)
         db.session.add(user)
     
@@ -61,8 +61,8 @@ def create_workout_exercises(fake, workouts, exercises, num_workout_exercises=10
     for _ in range(num_workout_exercises):
         workout = rc(workouts)
         exercise = rc(exercises)
-        weight = randint(5, 200)  # Random weight between 5 and 200
-        reps = randint(1, 20)  # Random reps between 1 and 20
+        weight = randint(5, 200)
+        reps = randint(1, 20)
 
         workout_exercise = WorkoutExercise(
             workout_id=workout.id,
