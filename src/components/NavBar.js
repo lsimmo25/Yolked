@@ -1,3 +1,5 @@
+// Navbar.js
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './NavBar.css';
@@ -38,7 +40,7 @@ const NavBar = ({ user, setUser }) => {
         {user ? (
           <li className="user-menu" onClick={toggleDropdown}>
             <img src={user.image_url} alt="prof_pic" className="prof-pic" />
-            {user.username}
+            {user.username.charAt(0).toUpperCase() + user.username.slice(1)}
             <span className="arrow">▼</span>
             {dropdownOpen && (
               <div className="dropdown">

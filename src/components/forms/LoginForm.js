@@ -1,3 +1,5 @@
+// LoginForm.js
+
 import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -21,7 +23,10 @@ function LoginForm({ onLogin, setShowLogin }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify({
+          username: values.username.toLowerCase(), // Ensures login submissions are in lowercase to match database entry
+          password: values.password,
+        }),
       })
         .then((r) => {
           setSubmitting(false);

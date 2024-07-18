@@ -1,5 +1,3 @@
-# models.py
-
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import validates
@@ -37,10 +35,10 @@ class User(db.Model, SerializerMixin):
     def authenticate(self, password):
         return bcrypt.check_password_hash(self._password_hash, password.encode('utf-8'))
 
-# Workouts Model
+# Workout Model
 class Workout(db.Model, SerializerMixin):
     __tablename__ = "workouts"
-    serialize_rules = ('-user.workouts', 'exercises', 'exercises.exercise')
+    serialize_rules = ('-user.workouts', '-exercises.workout')
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
@@ -60,7 +58,7 @@ class Workout(db.Model, SerializerMixin):
             raise ValueError("User ID cannot be blank.")
         return user_id
 
-# Exercises Model
+# Exercise Model
 class Exercise(db.Model, SerializerMixin):
     __tablename__ = "exercises"
     serialize_rules = ('-workout_exercises.exercise',)
@@ -75,10 +73,10 @@ class Exercise(db.Model, SerializerMixin):
             raise ValueError("Exercise name cannot be blank.")
         return name
     
-# Workout / Exercises Relationship Model
+# WorkoutExercise Model
 class WorkoutExercise(db.Model, SerializerMixin):
     __tablename__ = "workout_exercises"
-    serialize_rules = ('-workout.exercises', 'exercise')
+    serialize_rules = ('-workout.exercises', '-exercise.workout_exercises')
     id = db.Column(db.Integer, primary_key=True)
     workout_id = db.Column(db.Integer, db.ForeignKey('workouts.id'), nullable=False)
     exercise_id = db.Column(db.Integer, db.ForeignKey('exercises.id'), nullable=False)

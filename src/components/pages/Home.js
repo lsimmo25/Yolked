@@ -1,3 +1,5 @@
+// Home.js
+
 import React, { useEffect, useState } from 'react';
 import './Home.css';
 
@@ -6,6 +8,7 @@ const Home = ({ user }) => {
   const [hotStreak, setHotStreak] = useState(0);
   const [quote, setQuote] = useState('');
   const [author, setAuthor] = useState('Unknown');
+  const [personalRecords, setPersonalRecords] = useState({});
 
   useEffect(() => {
     fetch('/workouts')
@@ -32,6 +35,9 @@ const Home = ({ user }) => {
         }
 
         setHotStreak(streak);
+
+        const pr = calculatePersonalRecords(data);
+        setPersonalRecords(pr);
       })
       .catch((error) => console.error('Error fetching workouts:', error));
   }, []);
@@ -47,6 +53,21 @@ const Home = ({ user }) => {
       .catch((error) => console.error('Error fetching quote:', error));
   }, []);
 
+  const calculatePersonalRecords = (workouts) => {
+    const pr = {};
+
+    workouts.forEach(workout => {
+      workout.exercises.forEach(exercise => {
+        const maxWeight = exercise.sets.reduce((max, set) => Math.max(max, set.weight), 0);
+        if (!pr[exercise.name] || pr[exercise.name] < maxWeight) {
+          pr[exercise.name] = maxWeight;
+        }
+      });
+    });
+
+    return pr;
+  };
+
   const welcomeMessage = () => {
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const today = new Date().getDay();
@@ -56,7 +77,7 @@ const Home = ({ user }) => {
   return (
     <div className="dashboard-container">
       <div className="dashboard">
-        <h1 className="welcome-message">Hi, {user.username}!</h1>
+        <h1 className="welcome-message">Hi, {user.username.charAt(0).toUpperCase() + user.username.slice(1)}!</h1>
         <h3 className="day-message">{welcomeMessage()}</h3>
         <p className="quote">"{quote}"</p>
         <p className="author">- {author}</p>
@@ -69,6 +90,16 @@ const Home = ({ user }) => {
             <h2>Hot Streak 🔥</h2>
             <p>{hotStreak} days</p>
           </div>
+        </div>
+        <div className="pr-container">
+          <h2>Personal Records (PR)</h2>
+          <ul>
+            {Object.entries(personalRecords).map(([exercise, weight]) => (
+              <li key={exercise}>
+                {exercise.charAt(0).toUpperCase() + exercise.slice(1)}: {weight} lbs
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>

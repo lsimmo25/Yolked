@@ -180,6 +180,7 @@ def handle_workouts():
             )
             db.session.add(new_workout)
             db.session.commit()
+            
 
             exercises = data.get('exercises', [])
             for ex in exercises:
@@ -220,7 +221,9 @@ def handle_workouts():
             new_workout_data['exercises'] = list(exercises_dict.values())
 
             return make_response(jsonify(new_workout_data), 201)
+        
         except Exception as e:
+
             db.session.rollback()
             return make_response(jsonify({'errors': [str(e)]}), 400)
 

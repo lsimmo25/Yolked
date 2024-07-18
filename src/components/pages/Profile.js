@@ -1,7 +1,10 @@
+// Profile.js
+
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import './Profile.css';
+import defaultPicture from '../../images/DefaultProfilePic.png';
 
 const Profile = ({ user, updateUser }) => {
   const [editing, setEditing] = useState(false);
@@ -9,7 +12,7 @@ const Profile = ({ user, updateUser }) => {
   const formik = useFormik({
     initialValues: {
       username: user.username,
-      image_url: user.image_url,
+      image_url: "",
       bio: user.bio,
     },
     validationSchema: Yup.object({
@@ -18,12 +21,16 @@ const Profile = ({ user, updateUser }) => {
       bio: Yup.string(),
     }),
     onSubmit: (values, { setSubmitting }) => {
+      const updatedValues = {
+        ...values,
+        image_url: values.image_url || defaultPicture,
+      };
       fetch(`/users/${user.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(updatedValues),
       })
         .then((r) => r.json())
         .then((updatedUser) => {
@@ -60,9 +67,9 @@ const Profile = ({ user, updateUser }) => {
   return (
     <div className="profile-container">
       <h1>Profile Page</h1>
-      <img src={user.image_url} alt="profile_pic" className="profile-pic" />
+      <img src={user.image_url || defaultPicture} alt="profile_pic" className="profile-pic" />
       <div className="profile-info">
-        <h2>{user.username}</h2>
+        <h2>{user.username.charAt(0).toUpperCase() + user.username.slice(1)}</h2>
         <p>{user.bio}</p>
         <button onClick={() => setEditing(!editing)} className="edit-button">
           {editing ? 'Cancel' : 'Edit Profile'}
@@ -85,6 +92,7 @@ const Profile = ({ user, updateUser }) => {
               <input
                 type="text"
                 id="image_url"
+                placeholder='Enter Image URL Here'
                 {...formik.getFieldProps('image_url')}
               />
               {formik.touched.image_url && formik.errors.image_url ? (

@@ -1,3 +1,5 @@
+// SignUpForm.js
+
 import React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -27,7 +29,7 @@ function SignUpForm({ onLogin, setShowLogin }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: values.username,
+          username: values.username.toLowerCase(),
           password: values.password,
           password_confirmation: values.passwordConfirmation,
           image_url: default_picture,
@@ -43,7 +45,7 @@ function SignUpForm({ onLogin, setShowLogin }) {
                   "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                  username: values.username,
+                  username: values.username.toLowerCase(),
                   password: values.password,
                 }),
               })
