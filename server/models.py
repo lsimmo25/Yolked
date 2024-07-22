@@ -12,6 +12,7 @@ class User(db.Model, SerializerMixin):
     _password_hash = db.Column(db.String, nullable=True)
     image_url = db.Column(db.String, nullable=True)
     bio = db.Column(db.String, nullable=True)
+    body_weight = db.Column(db.Float, nullable=True)
 
     workouts = db.relationship('Workout', back_populates='user', cascade='all, delete-orphan')
 
@@ -20,6 +21,12 @@ class User(db.Model, SerializerMixin):
         if not username:
             raise ValueError("Username cannot be blank.")
         return username
+
+    @validates('body_weight')
+    def validate_body_weight(self, key, body_weight):
+        if body_weight is not None and body_weight <= 0:
+            raise ValueError("Body weight must be greater than zero.")
+        return body_weight
 
     @hybrid_property
     def password_hash(self):
