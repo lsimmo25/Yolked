@@ -15,6 +15,7 @@ class User(db.Model, SerializerMixin):
     body_weight = db.Column(db.Float, nullable=True)
 
     workouts = db.relationship('Workout', back_populates='user', cascade='all, delete-orphan')
+    weight_entries = db.relationship('WeightEntry', back_populates='user', cascade='all, delete-orphan')
 
     @validates('username')
     def validate_username(self, key, username):
@@ -41,6 +42,21 @@ class User(db.Model, SerializerMixin):
 
     def authenticate(self, password):
         return bcrypt.check_password_hash(self._password_hash, password.encode('utf-8'))
+
+class WeightEntry(db.Model, SerializerMixin):
+    __tablename__ = 'weight_entries'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    weight = db.Column(db.Float, nullable=False)
+    date = db.Column(db.String, nullable=False)
+
+    user = db.relationship('User', back_populates='weight_entries')
+
+    @validates('weight')
+    def validate_weight(self, key, weight):
+        if weight <= 0:
+            raise ValueError("Weight must be greater than zero.")
+        return weight
 
 # Workout Model
 class Workout(db.Model, SerializerMixin):
