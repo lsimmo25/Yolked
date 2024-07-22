@@ -361,6 +361,76 @@ class WorkoutExercises(Resource):
         except Exception as e:
             db.session.rollback()
             return {'error': str(e)}, 500
+        
+class BodyWeights(Resource):
+    def get(self):
+        user_id = get_current_user_id()
+
+        if not user_id:
+            return {'error': 'User not authenticated'}, 401
+
+        body_weights = BodyWeight.query.filter_by(user_id=user_id).all()
+        body_weights_dict = [bw.to_dict() for bw in body_weights]
+        return body_weights_dict, 200
+
+    def post(self):
+        user_id = get_current_user_id()
+
+        if not user_id:
+            return {'error': 'User not authenticated'}, 401
+
+        data = request.get_json()
+        date = data.get('date')
+        weight = data.get('weight')
+
+        if not date or not weight:
+            return {'error': 'Missing required fields'}, 400
+
+        try:
+            new_body_weight = BodyWeight(date=date, weight=weight, user_id=user_id)
+            db.session.add(new_body_weight)
+            db.session.commit()
+            return new_body_weight.to_dict(), 201
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+
+class BodyWeightByID(Resource):
+    def get(self, id):
+        body_weight = BodyWeight.query.filter_by(id=id).first()
+        if not body_weight:
+            return {"errors": ["Body weight entry not found"]}, 400
+        return body_weight.to_dict(), 200
+
+    def patch(self, id):
+        body_weight = BodyWeight.query.filter_by(id=id).first()
+        if not body_weight:
+            return {"errors": ["Body weight entry not found"]}, 400
+
+        data = request.get_json()
+        if 'date' in data:
+            body_weight.date = data['date']
+        if 'weight' in data:
+            body_weight.weight = data['weight']
+
+        try:
+            db.session.commit()
+            return body_weight.to_dict(), 200
+        except Exception as e:
+            return {"errors": [str(e)]}, 400
+
+    def delete(self, id):
+        body_weight = BodyWeight.query.filter_by(id=id).first()
+        if not body_weight:
+            return {"errors": ["Body weight entry not found"]}, 400
+
+        try:
+            db.session.delete(body_weight)
+            db.session.commit()
+            return {"message": "Body weight entry deleted successfully"}, 200
+        except Exception as e:
+            return {"errors": [str(e)]}, 400
+
 
 # Add resources to API
 api.add_resource(HomePage, '/')
@@ -375,6 +445,8 @@ api.add_resource(WorkoutByID, '/workouts/<int:id>')
 api.add_resource(Exercises, '/exercises')
 api.add_resource(ExerciseByID, '/exercises/<int:id>')
 api.add_resource(WorkoutExercises, '/workout_exercises')
+api.add_resource(BodyWeights, '/body_weights')
+api.add_resource(BodyWeightByID, '/body_weights/<int:id>')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

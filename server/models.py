@@ -6,7 +6,7 @@ from config import db, bcrypt
 # User Model
 class User(db.Model, SerializerMixin):
     __tablename__ = "users"
-    serialize_rules = ('-workouts.user', '-_password_hash')
+    serialize_rules = ('-workouts.user', '-_password_hash', '-body_weights.user',)
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, nullable=False)
     _password_hash = db.Column(db.String, nullable=True)
@@ -34,6 +34,29 @@ class User(db.Model, SerializerMixin):
 
     def authenticate(self, password):
         return bcrypt.check_password_hash(self._password_hash, password.encode('utf-8'))
+    
+# Body Weight Model
+class BodyWeight(db.Model, SerializerMixin):
+    __tablename__ = "body_weights"
+    serialize_rules = ('-user.body_weights',)
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    date = db.Column(db.String, nullable=False)
+    weight = db.Column(db.String, nullable=False)
+
+    user = db.relationship('User', back_populates="body_weights")
+
+    @validates('date')
+    def validate_date(self, key, date):
+        if not date:
+            raise ValueError("Date cannot be blank.")
+        return date
+
+    @validates('weight')
+    def validate_weight(self, key, weight):
+        if weight <= 0:
+            raise ValueError("Weight must be greater than zero.")
+        return weight
 
 # Workout Model
 class Workout(db.Model, SerializerMixin):
