@@ -431,7 +431,6 @@ class BodyWeightByID(Resource):
         except Exception as e:
             return {"errors": [str(e)]}, 400
 
-
 # Add resources to API
 api.add_resource(HomePage, '/')
 api.add_resource(Signup, '/signup')
