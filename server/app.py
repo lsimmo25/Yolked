@@ -4,7 +4,7 @@ from flask_session import Session
 
 # Local imports
 from config import app, db
-from models import User, Workout, Exercise, WorkoutExercise, Set
+from models import User, Workout, Exercise, WorkoutExercise, Set, BodyWeight
 
 # Configure Session
 app.config['SESSION_TYPE'] = 'filesystem'

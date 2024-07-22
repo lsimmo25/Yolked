@@ -43,7 +43,7 @@ class BodyWeight(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     date = db.Column(db.String, nullable=False)
-    weight = db.Column(db.String, nullable=False)
+    weight = db.Column(db.Float, nullable=False)
 
     user = db.relationship('User', back_populates="body_weights")
 
@@ -55,6 +55,7 @@ class BodyWeight(db.Model, SerializerMixin):
 
     @validates('weight')
     def validate_weight(self, key, weight):
+        weight = float(weight)
         if weight <= 0:
             raise ValueError("Weight must be greater than zero.")
         return weight
