@@ -12,22 +12,14 @@ class User(db.Model, SerializerMixin):
     _password_hash = db.Column(db.String, nullable=True)
     image_url = db.Column(db.String, nullable=True)
     bio = db.Column(db.String, nullable=True)
-    body_weight = db.Column(db.Float, nullable=True)
 
     workouts = db.relationship('Workout', back_populates='user', cascade='all, delete-orphan')
-    weight_entries = db.relationship('WeightEntry', back_populates='user', cascade='all, delete-orphan')
 
     @validates('username')
     def validate_username(self, key, username):
         if not username:
             raise ValueError("Username cannot be blank.")
         return username
-
-    @validates('body_weight')
-    def validate_body_weight(self, key, body_weight):
-        if body_weight is not None and body_weight <= 0:
-            raise ValueError("Body weight must be greater than zero.")
-        return body_weight
 
     @hybrid_property
     def password_hash(self):
@@ -42,21 +34,6 @@ class User(db.Model, SerializerMixin):
 
     def authenticate(self, password):
         return bcrypt.check_password_hash(self._password_hash, password.encode('utf-8'))
-
-class WeightEntry(db.Model, SerializerMixin):
-    __tablename__ = 'weight_entries'
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    weight = db.Column(db.Float, nullable=False)
-    date = db.Column(db.String, nullable=False)
-
-    user = db.relationship('User', back_populates='weight_entries')
-
-    @validates('weight')
-    def validate_weight(self, key, weight):
-        if weight <= 0:
-            raise ValueError("Weight must be greater than zero.")
-        return weight
 
 # Workout Model
 class Workout(db.Model, SerializerMixin):

@@ -1,10 +1,10 @@
-from flask import Flask, request, jsonify, session
+from flask import request, jsonify, session
 from flask_restful import Resource, Api
 from flask_session import Session
-from config import db, app
-from models import User, WeightEntry
-from datetime import datetime
-import pytz
+
+# Local imports
+from config import app, db
+from models import User, Workout, Exercise, WorkoutExercise, Set
 
 # Configure Session
 app.config['SESSION_TYPE'] = 'filesystem'
@@ -36,6 +36,7 @@ class Signup(Resource):
                 image_url=image_url,
                 bio=bio
             )
+
             new_user.password_hash = password
             db.session.add(new_user)
             db.session.commit()
@@ -76,45 +77,6 @@ class Users(Resource):
     def get(self):
         users = [user.to_dict() for user in User.query.all()]
         return users, 200
-
-class WeightEntries(Resource):
-    def get(self):
-        user_id = get_current_user_id()
-        if not user_id:
-            return {'error': 'User not authenticated'}, 401
-
-        weight_entries = WeightEntry.query.filter_by(user_id=user_id).all()
-        return [entry.to_dict() for entry in weight_entries], 200
-
-    def post(self):
-        user_id = get_current_user_id()
-        if not user_id:
-            return {'error': 'User not authenticated'}, 401
-
-        data = request.get_json()
-        weight = data.get('weight')
-        date = data.get('date')
-
-        if not weight or weight <= 0:
-            return {'error': 'Invalid weight'}, 400
-
-        if not date:
-            date = datetime.utcnow()
-        else:
-            date = datetime.strptime(date, '%Y-%m-%d')
-
-        # Convert date to Eastern Time
-        eastern = pytz.timezone('US/Eastern')
-        date = date.astimezone(eastern)
-
-        try:
-            new_entry = WeightEntry(user_id=user_id, weight=weight, date=date.strftime('%Y-%m-%d'))
-            db.session.add(new_entry)
-            db.session.commit()
-            return new_entry.to_dict(), 201
-        except Exception as e:
-            db.session.rollback()
-            return {'error': str(e)}, 500
 
 class UserByID(Resource):
     def get(self, id):
@@ -161,6 +123,244 @@ class UserByID(Resource):
             return {"message": "User deleted successfully"}, 200
         except Exception as e:
             return {"errors": [str(e)]}, 400
+        
+class Workouts(Resource):
+    def get(self):
+        user_id = get_current_user_id()
+
+        if not user_id:
+            return {'error': 'User not authenticated'}, 401
+
+        workouts = Workout.query.filter_by(user_id=user_id).all()
+        workouts_dict = []
+
+        for workout in workouts:
+            workout_data = workout.to_dict()
+            workout_data['exercises'] = []
+
+            workout_exercises = WorkoutExercise.query.filter_by(workout_id=workout.id).all()
+            exercises_dict = {}
+
+            for we in workout_exercises:
+                exercise = Exercise.query.get(we.exercise_id)
+                if exercise.id not in exercises_dict:
+                    exercise_data = exercise.to_dict()
+                    exercise_data['sets'] = [set.to_dict() for set in we.sets]
+                    exercises_dict[exercise.id] = exercise_data
+                else:
+                    exercises_dict[exercise.id]['sets'].extend([set.to_dict() for set in we.sets])
+
+            workout_data['exercises'] = list(exercises_dict.values())
+            workouts_dict.append(workout_data)
+
+        return workouts_dict, 200
+
+    def post(self):
+        user_id = get_current_user_id()
+
+        if not user_id:
+            return {'error': 'User not authenticated'}, 401
+
+        data = request.get_json()
+        try:
+            new_workout = Workout(
+                date=data['date'],
+                user_id=user_id
+            )
+            db.session.add(new_workout)
+            db.session.commit()
+
+            exercises = data.get('exercises', [])
+            for ex in exercises:
+                exercise_name = ex.get('name')
+                existing_exercise = Exercise.query.filter_by(name=exercise_name).first()
+                if not existing_exercise:
+                    existing_exercise = Exercise(name=exercise_name)
+                    db.session.add(existing_exercise)
+                    db.session.commit()
+
+                for set_data in ex.get('sets', []):
+                    workout_exercise = WorkoutExercise(
+                        workout_id=new_workout.id,
+                        exercise_id=existing_exercise.id,
+                    )
+                    db.session.add(workout_exercise)
+                    db.session.commit()
+
+                    new_set = Set(
+                        workout_exercise_id=workout_exercise.id,
+                        weight=set_data['weight'],
+                        reps=set_data['reps']
+                    )
+                    db.session.add(new_set)
+            
+            db.session.commit()
+            new_workout_data = new_workout.to_dict()
+            new_workout_data['exercises'] = []
+
+            workout_exercises = WorkoutExercise.query.filter_by(workout_id=new_workout.id).all()
+            exercises_dict = {}
+            for we in workout_exercises:
+                exercise = Exercise.query.get(we.exercise_id)
+                if exercise.id not in exercises_dict:
+                    exercise_data = exercise.to_dict()
+                    exercise_data['sets'] = [set.to_dict() for set in we.sets]
+                    exercises_dict[exercise.id] = exercise_data
+                exercises_dict[exercise.id]['sets'] = [set.to_dict() for set in we.sets]
+
+            new_workout_data['exercises'] = list(exercises_dict.values())
+
+            return new_workout_data, 201
+        
+        except Exception as e:
+            db.session.rollback()
+            return {'errors': [str(e)]}, 400
+
+class WorkoutByID(Resource):
+    def get(self, id):
+        workout = Workout.query.filter_by(id=id).first()
+        return workout.to_dict(), 200
+
+    def patch(self, id):
+        workout = Workout.query.filter_by(id=id).first()
+        if not workout:
+            return {"errors": ["Workout not found"]}, 400
+
+        data = request.get_json()
+
+        if 'date' in data:
+            workout.date = data['date']
+
+        try:
+            db.session.commit()
+            return workout.to_dict(), 200
+        except Exception as e:
+            return {"errors": [str(e)]}, 400
+
+    def delete(self, id):
+        workout = Workout.query.filter_by(id=id).first()
+        if not workout:
+            return {"errors": ["Workout not found"]}, 400
+
+        try:
+            db.session.delete(workout)
+            db.session.commit()
+            return {"message": "Workout deleted successfully"}, 200
+        except Exception as e:
+            return {"errors": [str(e)]}, 400
+
+class Exercises(Resource):
+    def get(self):
+        exercises = [exercise.to_dict() for exercise in Exercise.query.all()]
+        return exercises, 200
+
+    def post(self):
+        data = request.get_json()
+        try:
+            new_exercise = Exercise(
+                name=data['name']
+            )
+            db.session.add(new_exercise)
+            db.session.commit()
+            return new_exercise.to_dict(), 201
+        except Exception as e:
+            return {"errors": [str(e)]}, 400
+
+class ExerciseByID(Resource):
+    def get(self, id):
+        exercise = Exercise.query.filter_by(id=id).first()
+        if not exercise:
+            return {"errors": ["Exercise not found"]}, 400
+        return exercise.to_dict(), 200
+
+    def patch(self, id):
+        exercise = Exercise.query.filter_by(id=id).first()
+        if not exercise:
+            return {"errors": ["Exercise not found"]}, 400
+
+        data = request.get_json()
+        if 'name' in data:
+            exercise.name = data['name']
+        try:
+            db.session.commit()
+            return exercise.to_dict(), 200
+        except Exception as e:
+            return {"errors": [str(e)]}, 400
+
+    def delete(self, id):
+        exercise = Exercise.query.filter_by(id=id).first()
+        if not exercise:
+            return {"errors": ["Exercise not found"]}, 400
+
+        try:
+            db.session.delete(exercise)
+            db.session.commit()
+            return {"message": "Exercise deleted successfully"}, 200
+        except Exception as e:
+            return {"errors": [str(e)]}, 400
+
+class WorkoutExercises(Resource):
+    def get(self):
+        user_id = get_current_user_id()
+
+        if not user_id:
+            return {'error': 'User not authenticated'}, 401
+        
+        workouts = Workout.query.filter_by(user_id=user_id).all()
+        workouts_dict = [workout.to_dict() for workout in workouts]
+        return workouts_dict, 200
+
+    def post(self):
+        user_id = get_current_user_id()
+
+        if not user_id:
+            return {'error': 'User not authenticated'}, 401
+
+        data = request.get_json()
+        date = data.get('date')
+        exercises = data.get('exercises')
+
+        if not date or not exercises:
+            return {'error': 'Missing required fields'}, 400
+
+        try:
+            workout = Workout(date=date, user_id=user_id)
+            db.session.add(workout)
+            db.session.commit()
+
+            for ex in exercises:
+                exercise_name = ex.get('name')
+                exercise = Exercise.query.filter_by(name=exercise_name).first()
+                if not exercise:
+                    exercise = Exercise(name=exercise_name)
+                    db.session.add(exercise)
+                    db.session.commit()
+
+                workout_exercise = WorkoutExercise(
+                    workout_id=workout.id,
+                    exercise_id=exercise.id,
+                )
+                db.session.add(workout_exercise)
+                db.session.commit()
+
+                for set_data in ex.get('sets', []):
+                    weight = set_data.get('weight')
+                    reps = set_data.get('reps')
+                    if weight is None or reps is None:
+                        return {'error': 'Missing set fields'}, 400
+
+                    new_set = Set(
+                        workout_exercise_id=workout_exercise.id,
+                        weight=weight,
+                        reps=reps
+                    )
+                    db.session.add(new_set)
+            
+            db.session.commit()
+            return workout.to_dict(), 201
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
 
 # Add resources to API
 api.add_resource(HomePage, '/')
@@ -170,7 +370,11 @@ api.add_resource(CheckSession, '/check_session')
 api.add_resource(Logout, '/logout')
 api.add_resource(Users, '/users')
 api.add_resource(UserByID, '/users/<int:id>')
-api.add_resource(WeightEntries, '/weight_entries')
+api.add_resource(Workouts, '/workouts')
+api.add_resource(WorkoutByID, '/workouts/<int:id>')
+api.add_resource(Exercises, '/exercises')
+api.add_resource(ExerciseByID, '/exercises/<int:id>')
+api.add_resource(WorkoutExercises, '/workout_exercises')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
