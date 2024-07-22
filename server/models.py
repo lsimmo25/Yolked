@@ -76,15 +76,24 @@ class Exercise(db.Model, SerializerMixin):
 # WorkoutExercise Model
 class WorkoutExercise(db.Model, SerializerMixin):
     __tablename__ = "workout_exercises"
-    serialize_rules = ('-workout.exercises', '-exercise.workout_exercises')
+    serialize_rules = ('-workout.exercises', '-exercise.workout_exercises', '-sets.workout_exercise')
     id = db.Column(db.Integer, primary_key=True)
     workout_id = db.Column(db.Integer, db.ForeignKey('workouts.id'), nullable=False)
     exercise_id = db.Column(db.Integer, db.ForeignKey('exercises.id'), nullable=False)
-    weight = db.Column(db.Float, nullable=False)
-    reps = db.Column(db.Integer, nullable=False)
 
     workout = db.relationship('Workout', back_populates='exercises')
     exercise = db.relationship('Exercise', back_populates='workout_exercises')
+    sets = db.relationship('Set', back_populates='workout_exercise', cascade='all, delete-orphan')
+
+# Set Model
+class Set(db.Model, SerializerMixin):
+    __tablename__ = "sets"
+    id = db.Column(db.Integer, primary_key=True)
+    workout_exercise_id = db.Column(db.Integer, db.ForeignKey('workout_exercises.id'), nullable=False)
+    weight = db.Column(db.Float, nullable=False)
+    reps = db.Column(db.Integer, nullable=False)
+
+    workout_exercise = db.relationship('WorkoutExercise', back_populates='sets')
 
     @validates('weight')
     def validate_weight(self, key, weight):
