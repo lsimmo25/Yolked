@@ -14,6 +14,7 @@ class User(db.Model, SerializerMixin):
     bio = db.Column(db.String, nullable=True)
 
     workouts = db.relationship('Workout', back_populates='user', cascade='all, delete-orphan')
+    body_weights = db.relationship('BodyWeight', back_populates='user', cascade='all, delete-orphan')
 
     @validates('username')
     def validate_username(self, key, username):
