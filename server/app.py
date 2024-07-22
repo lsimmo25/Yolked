@@ -20,6 +20,7 @@ class HomePage(Resource):
         return '<h1>Project Server</h1>'
 
 class Signup(Resource):
+
     def post(self):
         data = request.get_json()
         username = data['username']
@@ -46,6 +47,7 @@ class Signup(Resource):
             return {"errors": [str(e)]}, 400
 
 class Login(Resource):
+    
     def post(self):
         data = request.get_json()
         username = data['username']
