@@ -1,5 +1,3 @@
-// WorkoutForm.js
-
 import React from "react";
 import { Formik, Form, Field, FieldArray, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -10,6 +8,7 @@ const initialValues = {
   exercises: [
     {
       name: "",
+      newExercise: "",
       sets: [{ weight: "", reps: "" }],
     },
   ],
@@ -19,7 +18,8 @@ const validationSchema = Yup.object().shape({
   date: Yup.string().required("Date is required"),
   exercises: Yup.array().of(
     Yup.object().shape({
-      name: Yup.string().required("Exercise name is required"),
+      name: Yup.string(),
+      newExercise: Yup.string(),
       sets: Yup.array().of(
         Yup.object().shape({
           weight: Yup.number().required("Weight is required").positive(),
@@ -30,14 +30,22 @@ const validationSchema = Yup.object().shape({
   ),
 });
 
-const WorkoutForm = ({ updateWorkouts }) => {
+const WorkoutForm = ({ updateWorkouts, exercises }) => {
   const handleSubmit = (values, { resetForm }) => {
+    const formattedValues = {
+      ...values,
+      exercises: values.exercises.map(ex => ({
+        ...ex,
+        name: ex.newExercise || ex.name
+      }))
+    };
+
     fetch("/workouts", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(values),
+      body: JSON.stringify(formattedValues),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -85,8 +93,18 @@ const WorkoutForm = ({ updateWorkouts }) => {
                       <React.Fragment key={exerciseIndex}>
                         <tr>
                           <td>
-                            <Field name={`exercises.${exerciseIndex}.name`} type="text" />
+                            <Field as="select" name={`exercises.${exerciseIndex}.name`}>
+                              <option value="">Select Exercise</option>
+                              {exercises.map((exercise) => (
+                                <option key={exercise} value={exercise}>
+                                  {exercise}
+                                </option>
+                              ))}
+                            </Field>
                             <ErrorMessage name={`exercises.${exerciseIndex}.name`} component="div" className="error-message" />
+                            <div>or</div>
+                            <Field name={`exercises.${exerciseIndex}.newExercise`} placeholder="New Exercise" type="text" />
+                            <ErrorMessage name={`exercises.${exerciseIndex}.newExercise`} component="div" className="error-message" />
                           </td>
                           <td>
                             <Field name={`exercises.${exerciseIndex}.sets.0.weight`} type="number" />
@@ -141,7 +159,7 @@ const WorkoutForm = ({ updateWorkouts }) => {
                   </tbody>
                 </table>
                 <div className="button-container">
-                  <button type="button" onClick={() => push({ name: "", sets: [{ weight: "", reps: "" }] })} className="add-exercise">
+                  <button type="button" onClick={() => push({ name: "", newExercise: "", sets: [{ weight: "", reps: "" }] })} className="add-exercise">
                     Add Exercise
                   </button>
                   <button type="submit" className="submit">Submit</button>
