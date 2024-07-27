@@ -33,8 +33,9 @@
 }
 
 .stats-container {
-  display: flex;
-  justify-content: space-around;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
   margin-bottom: 20px;
 }
 
@@ -43,6 +44,10 @@
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stat.full-width {
+  grid-column: span 2;
 }
 
 .pr-container {
@@ -60,4 +65,17 @@
 
 .pr-container li {
   margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pr-icon {
+  color: #FFA500;
+  margin-left: 10px;
+}
+
+.hotstreak-icon {
+  color: #FFA500;
+  margin-left: 5px;
 }

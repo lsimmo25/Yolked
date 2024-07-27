@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { UserContext } from './Context/UserContext';
 import './NavBar.css';
 import logo from '../images/Egg Kettlebell.png';
@@ -32,13 +32,21 @@ const NavBar = () => {
     <nav>
       <ul>
         <li>
-          <Link to="/">
+          <NavLink to="/" exact="true" className={({ isActive }) => (isActive ? 'active-link' : '')}>
             <img src={logo} alt="Logo" className="nav-logo" />
             Home
-          </Link>
+          </NavLink>
         </li>
-        <li><Link to="/workouts">Workouts</Link></li>
-        <li><Link to="/body-weight">Body Weight</Link></li> {/* Add the new link */}
+        <li>
+          <NavLink to="/workouts" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+            Workouts
+          </NavLink>
+        </li>
+        <li>
+          <NavLink to="/body-weight" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+            Body Weight
+          </NavLink>
+        </li>
         {user ? (
           <li className="user-menu" onClick={toggleDropdown}>
             <img src={user.image_url} alt="prof_pic" className="prof-pic" />
@@ -46,13 +54,13 @@ const NavBar = () => {
             <span className="arrow">▼</span>
             {dropdownOpen && (
               <div className="dropdown">
-                <Link to="/profile">Profile</Link>
+                <NavLink to="/profile" className={({ isActive }) => (isActive ? 'active-link' : '')}>Profile</NavLink>
                 <button className="logout" onClick={handleLogout}>Logout</button>
               </div>
             )}
           </li>
         ) : (
-          <li><Link to="/login">Login</Link></li>
+          <li><NavLink to="/login" className={({ isActive }) => (isActive ? 'active-link' : '')}>Login</NavLink></li>
         )}
       </ul>
     </nav>
