@@ -48,10 +48,11 @@ const BodyWeightForm = ({ addBodyWeight }) => {
           type="number"
           value={weight}
           onChange={(e) => setWeight(e.target.value)}
+          placeholder='Enter Weight'
           required
         />
       </label>
-      <button type="submit">Log Body Weight</button>
+      <button type="submit">Submit</button>
     </form>
   );
 };
