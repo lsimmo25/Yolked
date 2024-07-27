@@ -58,6 +58,12 @@
   margin-top: 20px;
 }
 
+.pr-container h2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .pr-container ul {
   list-style-type: none;
   padding: 0;
@@ -65,12 +71,10 @@
 
 .pr-container li {
   margin-bottom: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  text-align: center;
 }
 
-.pr-icon {
+.pr-title-icon {
   color: #FFA500;
   margin-left: 10px;
 }

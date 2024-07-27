@@ -14,7 +14,6 @@ const Home = () => {
   const [quote, setQuote] = useState('');
   const [author, setAuthor] = useState('Unknown');
   const [personalRecords, setPersonalRecords] = useState({});
-  const [newPRsToday, setNewPRsToday] = useState({});
 
   useEffect(() => {
     fetch('/workouts')
@@ -44,23 +43,6 @@ const Home = () => {
 
         const pr = calculatePersonalRecords(data);
         setPersonalRecords(pr);
-
-        // Determine new PRs for today
-        const today = new Date().setHours(0, 0, 0, 0);
-        const newPRsToday = {};
-        data.forEach(workout => {
-          const workoutDate = new Date(workout.date).setHours(0, 0, 0, 0);
-          if (workoutDate === today) {
-            workout.exercises.forEach(exercise => {
-              const maxWeight = exercise.sets.reduce((max, set) => Math.max(max, set.weight), 0);
-              if (pr[exercise.name] === maxWeight) {
-                newPRsToday[exercise.name] = true;
-              }
-            });
-          }
-        });
-
-        setNewPRsToday(newPRsToday);
       })
       .catch((error) => console.error('Error fetching workouts:', error));
   }, []);
@@ -162,12 +144,11 @@ const Home = () => {
           )}
         </div>
         <div className="pr-container">
-          <h2>Personal Records (PR)</h2>
+          <h2>Personal Records<FontAwesomeIcon icon={faTrophy} className="pr-title-icon" /></h2>
           <ul>
             {Object.entries(personalRecords).map(([exercise, weight]) => (
               <li key={exercise}>
                 {exercise.charAt(0).toUpperCase() + exercise.slice(1)}: {weight} lbs
-                {newPRsToday[exercise] && <FontAwesomeIcon icon={faTrophy} className="pr-icon" />}
               </li>
             ))}
           </ul>
