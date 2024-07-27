@@ -1,12 +1,12 @@
-// Navbar.js
-
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { UserContext } from './Context/UserContext';
 import './NavBar.css';
 import logo from '../images/Egg Kettlebell.png';
 
-const NavBar = ({ user, setUser }) => {
+const NavBar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { user, setUser } = useContext(UserContext);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -33,10 +33,12 @@ const NavBar = ({ user, setUser }) => {
       <ul>
         <li>
           <Link to="/">
-          <img src={logo} alt="Logo" className="nav-logo" />
-          Home
-        </Link></li>
+            <img src={logo} alt="Logo" className="nav-logo" />
+            Home
+          </Link>
+        </li>
         <li><Link to="/workouts">Workouts</Link></li>
+        <li><Link to="/body-weight">Body Weight</Link></li> {/* Add the new link */}
         {user ? (
           <li className="user-menu" onClick={toggleDropdown}>
             <img src={user.image_url} alt="prof_pic" className="prof-pic" />

@@ -1,0 +1,16 @@
+.body-weight-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #444;
+    border-radius: 10px;
+    background-color: #222;
+  }
+  
+  .body-weight-container h1 {
+    margin-bottom: 20px;
+    color: white;
+  }
+  

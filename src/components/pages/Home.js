@@ -1,9 +1,9 @@
-// Home.js
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { UserContext } from '../Context/UserContext';
 import './Home.css';
 
-const Home = ({ user }) => {
+const Home = () => {
+  const { user } = useContext(UserContext);
   const [totalWorkouts, setTotalWorkouts] = useState(0);
   const [hotStreak, setHotStreak] = useState(0);
   const [quote, setQuote] = useState('');

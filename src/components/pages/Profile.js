@@ -1,12 +1,12 @@
-// Profile.js
-
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { UserContext } from '../Context/UserContext';
 import './Profile.css';
 import defaultPicture from '../../images/DefaultProfilePic.png';
 
-const Profile = ({ user, updateUser }) => {
+const Profile = () => {
+  const { user, setUser } = useContext(UserContext);
   const [editing, setEditing] = useState(false);
 
   const formik = useFormik({
@@ -34,7 +34,7 @@ const Profile = ({ user, updateUser }) => {
       })
         .then((r) => r.json())
         .then((updatedUser) => {
-          updateUser(updatedUser);
+          setUser(updatedUser);
           setEditing(false);
           setSubmitting(false);
         })
@@ -52,7 +52,7 @@ const Profile = ({ user, updateUser }) => {
       })
         .then((response) => {
           if (response.ok) {
-            updateUser(null);
+            setUser(null);
             window.location.href = '/signup';
           } else {
             console.error('Failed to delete account');

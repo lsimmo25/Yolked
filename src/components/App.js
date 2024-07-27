@@ -1,39 +1,42 @@
-// App.js
-
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { UserProvider, UserContext } from './Context/UserContext';
 import NavBar from './NavBar';
 import Home from './pages/Home';
 import Workouts from './pages/Workouts';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
+import BodyWeight from './pages/BodyWeight';
 import './App.css';
 
 function App() {
-  const [user, setUser] = useState(null);
+  return (
+    <UserProvider>
+      <Router>
+        <MainApp />
+      </Router>
+    </UserProvider>
+  );
+}
 
-  useEffect(() => {
-    fetch("/check_session").then((r) => {
-      if (r.ok) {
-        r.json().then((user) => setUser(user));
-      }
-    });
-  }, []);
+function MainApp() {
+  const { user, setUser } = React.useContext(UserContext);
 
   if (!user) return <Login onLogin={setUser} />;
 
   return (
-    <Router>
-      <NavBar user={user} setUser={setUser} />
+    <>
+      <NavBar />
       <main className="content">
         <Routes>
-          <Route path="/" element={<Home user={user} setUser={setUser} />} />
+          <Route path="/" element={<Home />} />
           <Route path="/workouts" element={<Workouts />} />
-          <Route path="/profile" element={<Profile user={user} updateUser={setUser}/>} />
-          <Route path="/login" element={<Login onLogin={setUser} />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/body-weight" element={<BodyWeight />} />
+          <Route path="/login" element={<Login />} />
         </Routes>
       </main>
-    </Router>
+    </>
   );
 }
 
