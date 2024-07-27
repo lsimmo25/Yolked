@@ -12,7 +12,7 @@ Yolked is a workout tracking application designed to help users log, track, and 
 - **Workout History**: Users can view their workout history filtered by date.
 - **Delete Workouts**: Users can delete specific workout entries.
 - **Responsive Design**: The app is designed to be responsive and works well on various screen sizes.
-- **Home Dashboard**: See your total workouts, hot streak, and personal bests. Greeted with a motivational quote
+- **Home Dashboard**: See your total workouts, total bodyweights logged, hot streaks, current weight, and personal bests. Greeted with a motivational quote
 - **Body Weight Logging**: Log your body weight and view your progress with a graph
 
 ## Installation
@@ -87,4 +87,5 @@ This project is licensed under the MIT License. See the LICENSE file for details
 - Flask
 - SQLAlchemy
 - Type Fit API
+- FontAwesome
 
