@@ -1,4 +1,4 @@
-/* Navbar.css */
+/* NavBar.css */
 
 nav {
   background-color: #1e1e1e;
@@ -28,6 +28,7 @@ nav a, nav button {
   border: none;
   cursor: pointer;
   font-size: 16px;
+  padding: 10px 15px;
 }
 
 nav a:hover, nav button:hover {
@@ -45,27 +46,30 @@ nav .dropdown {
   position: absolute;
   top: 100%;
   left: 0;
+  width: 150px;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  padding-top: 10px;
-  align-items: left;
+  background-color: #1e1e1e;
 }
 
-nav .user-menu:hover .dropdown {
+nav .user-menu:hover .dropdown,
+nav .dropdown:hover {
   display: block;
 }
 
 nav .dropdown a, nav .dropdown button {
   display: block;
+  width: 100%;
   padding: 10px;
   white-space: nowrap;
   text-align: left;
   color: #e0e0e0;
   text-decoration: none;
+  background-color: #1e1e1e;
 }
 
 nav .dropdown a:hover, nav .dropdown button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 166, 0, 0.459);
 }
 
 .nav-logo {
