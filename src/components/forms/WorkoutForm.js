@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Formik, Form, Field, FieldArray, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import "./WorkoutForm.css";
+import EditExercisesModal from '../Modals/EditExercisesModal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPencilAlt, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const initialValues = {
   date: "",
@@ -30,7 +33,9 @@ const validationSchema = Yup.object().shape({
   ),
 });
 
-const WorkoutForm = ({ updateWorkouts, exercises }) => {
+const WorkoutForm = ({ updateWorkouts, exercises, setExercises }) => {
+  const [isModalOpen, setModalOpen] = useState(false);
+
   const handleSubmit = (values, { resetForm }) => {
     const formattedValues = {
       ...values,
@@ -93,15 +98,20 @@ const WorkoutForm = ({ updateWorkouts, exercises }) => {
                       <React.Fragment key={exerciseIndex}>
                         <tr>
                           <td>
-                            <Field as="select" name={`exercises.${exerciseIndex}.name`}>
-                              <option value="">Select Exercise</option>
-                              {exercises.map((exercise) => (
-                                <option key={exercise} value={exercise}>
-                                  {exercise}
-                                </option>
-                              ))}
-                            </Field>
-                            <ErrorMessage name={`exercises.${exerciseIndex}.name`} component="div" className="error-message" />
+                            <div className="exercise-field">
+                              <Field as="select" name={`exercises.${exerciseIndex}.name`}>
+                                <option value="">Select Exercise</option>
+                                {exercises.map((exercise) => (
+                                  <option key={exercise} value={exercise}>
+                                    {exercise}
+                                  </option>
+                                ))}
+                              </Field>
+                              <ErrorMessage name={`exercises.${exerciseIndex}.name`} component="div" className="error-message" />
+                              <button type="button" onClick={() => setModalOpen(true)} className="edit-exercises-button">
+                                <FontAwesomeIcon icon={faPencilAlt} />
+                              </button>
+                            </div>
                             <div>or</div>
                             <Field name={`exercises.${exerciseIndex}.newExercise`} placeholder="New Exercise" type="text" />
                             <ErrorMessage name={`exercises.${exerciseIndex}.newExercise`} component="div" className="error-message" />
@@ -116,7 +126,7 @@ const WorkoutForm = ({ updateWorkouts, exercises }) => {
                           </td>
                           <td>
                             <button type="button" onClick={() => remove(exerciseIndex)} className="remove-exercise">
-                              x
+                              <FontAwesomeIcon icon={faTrash} />
                             </button>
                           </td>
                         </tr>
@@ -136,7 +146,7 @@ const WorkoutForm = ({ updateWorkouts, exercises }) => {
                                   </td>
                                   <td>
                                     <button type="button" className="remove-set" onClick={() => removeSet(setIndex + 1)}>
-                                      x
+                                      <FontAwesomeIcon icon={faTrash} />
                                     </button>
                                   </td>
                                 </tr>
@@ -167,6 +177,13 @@ const WorkoutForm = ({ updateWorkouts, exercises }) => {
               </div>
             )}
           </FieldArray>
+
+          <EditExercisesModal
+            isOpen={isModalOpen}
+            onClose={() => setModalOpen(false)}
+            exercises={exercises}
+            setExercises={setExercises}
+          />
         </Form>
       )}
     </Formik>

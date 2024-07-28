@@ -1,0 +1,50 @@
+/* EditExercisesModal.css */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    background-color: #1e1e1e;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 100%;
+    color: #e0e0e0;
+  }
+  
+  .modal-content h2 {
+    margin-top: 0;
+  }
+  
+  .exercise-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .delete-exercise-button {
+    background: none;
+    border: none;
+    color: red;
+    cursor: pointer;
+    font-size: 0.8em;
+  }
+  
+  .close-button {
+    margin-top: 20px;
+    background-color: orange;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+  }
+  
