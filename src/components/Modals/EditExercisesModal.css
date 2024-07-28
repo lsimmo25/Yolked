@@ -26,10 +26,27 @@
     margin-top: 0;
   }
   
+  .exercise-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
   .exercise-item {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #2a2a2a;
+    border-radius: 4px;
+    width: 100%;
+  }
+  
+  .exercise-name {
+    flex-grow: 1;
+    text-align: left;
+    margin: 0;
   }
   
   .delete-exercise-button {
@@ -37,14 +54,21 @@
     border: none;
     color: red;
     cursor: pointer;
-    font-size: 0.8em;
+    font-size: 1em;
   }
   
   .add-exercise-form {
     margin-top: 20px;
   }
   
-  .add-exercise-form input {
+  .input-button-group {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+  }
+  
+  .input-button-group input {
+    width: 40%;
     padding: 10px;
     border-radius: 4px;
     border: 1px solid #333;
@@ -53,12 +77,12 @@
     margin-right: 10px;
   }
   
-  .add-exercise-form button {
-    background-color: orange;
-    color: white;
+  .add-exercise-button {
+    background: none;
     border: none;
-    padding: 10px 20px;
     cursor: pointer;
+    color: green;
+    font-size: 1.2em;
   }
   
   .close-button {

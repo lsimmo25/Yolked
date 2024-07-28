@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './EditExercisesModal.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faCheck } from '@fortawesome/free-solid-svg-icons';
 
 const EditExercisesModal = ({ isOpen, onClose, exercises, setExercises }) => {
   const [newExercise, setNewExercise] = useState('');
@@ -40,10 +40,10 @@ const EditExercisesModal = ({ isOpen, onClose, exercises, setExercises }) => {
     <div className="modal-overlay">
       <div className="modal-content">
         <h2>Edit Exercises</h2>
-        <ul>
+        <ul className="exercise-list">
           {exercises.map((exercise) => (
             <li key={exercise} className="exercise-item">
-              {exercise}
+              <span className="exercise-name">{exercise}</span>
               <button onClick={() => handleDeleteExercise(exercise)} className="delete-exercise-button">
                 <FontAwesomeIcon icon={faTrash} />
               </button>
@@ -51,13 +51,18 @@ const EditExercisesModal = ({ isOpen, onClose, exercises, setExercises }) => {
           ))}
         </ul>
         <div className="add-exercise-form">
-          <input
-            type="text"
-            value={newExercise}
-            onChange={(e) => setNewExercise(e.target.value)}
-            placeholder="Add New Exercise"
-          />
-          <button onClick={handleAddExercise}>Add</button>
+          <h2>Add Exercise</h2>
+          <div className="input-button-group">
+            <input
+              type="text"
+              value={newExercise}
+              onChange={(e) => setNewExercise(e.target.value)}
+              placeholder="Add New Exercise"
+            />
+            <button onClick={handleAddExercise} className="add-exercise-button">
+              <FontAwesomeIcon icon={faCheck} />
+            </button>
+          </div>
         </div>
         <button onClick={onClose} className="close-button">Close</button>
       </div>
