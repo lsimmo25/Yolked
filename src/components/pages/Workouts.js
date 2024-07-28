@@ -43,7 +43,7 @@ const Workouts = () => {
     <div>
       <h1 style={{ marginLeft: '20px', color: '#fff' }}>Workouts</h1>
       <div className="workout-container">
-        <WorkoutForm updateWorkouts={handleAddWorkout} exercises={exercises} />
+        <WorkoutForm updateWorkouts={handleAddWorkout} exercises={exercises} setExercises={setExercises} />
         <WorkoutHistory workouts={workouts} setWorkouts={setWorkouts} />
       </div>
     </div>

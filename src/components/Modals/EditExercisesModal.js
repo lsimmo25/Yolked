@@ -1,31 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './EditExercisesModal.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const EditExercisesModal = ({ isOpen, onClose, exercises, setExercises }) => {
+  const [newExercise, setNewExercise] = useState('');
+
   if (!isOpen) return null;
 
   const handleDeleteExercise = (exerciseName) => {
-    if (window.confirm(`Are you sure you want to delete the exercise: ${exerciseName}?`)) {
-      fetch(`/exercises`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: exerciseName }),
+    setExercises((prevExercises) => prevExercises.filter((ex) => ex !== exerciseName));
+  };
+
+  const handleAddExercise = () => {
+    if (newExercise.trim() === '') return;
+
+    fetch("/exercises", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: newExercise }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.errors) {
+          console.error(data.errors);
+        } else {
+          setExercises((prevExercises) => [...prevExercises, newExercise]);
+          setNewExercise('');
+        }
       })
-        .then((response) => {
-          if (response.ok) {
-            setExercises((prevExercises) => prevExercises.filter((ex) => ex !== exerciseName));
-          } else {
-            console.error('Failed to delete exercise');
-          }
-        })
-        .catch((error) => {
-          console.error('Error deleting exercise:', error);
-        });
-    }
+      .catch((error) => {
+        console.error("Error adding exercise:", error);
+      });
   };
 
   return (
@@ -42,6 +50,15 @@ const EditExercisesModal = ({ isOpen, onClose, exercises, setExercises }) => {
             </li>
           ))}
         </ul>
+        <div className="add-exercise-form">
+          <input
+            type="text"
+            value={newExercise}
+            onChange={(e) => setNewExercise(e.target.value)}
+            placeholder="Add New Exercise"
+          />
+          <button onClick={handleAddExercise}>Add</button>
+        </div>
         <button onClick={onClose} className="close-button">Close</button>
       </div>
     </div>
