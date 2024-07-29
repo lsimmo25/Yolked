@@ -4,7 +4,7 @@ from flask_session import Session
 
 # Local imports
 from config import app, db
-from models import User, Workout, Exercise, WorkoutExercise, Set, BodyWeight
+from models import User, Workout, Exercise, WorkoutExercise, Set, BodyWeight, Food
 
 # Configure Session
 app.config['SESSION_TYPE'] = 'filesystem'
@@ -434,7 +434,6 @@ class BodyWeightByID(Resource):
 class Foods(Resource):
     def get(self):
         user_id = get_current_user_id()
-
         if not user_id:
             return {'error': 'User not authenticated'}, 401
 
@@ -444,22 +443,23 @@ class Foods(Resource):
 
     def post(self):
         user_id = get_current_user_id()
-
         if not user_id:
             return {'error': 'User not authenticated'}, 401
 
         data = request.get_json()
         food_name = data.get('food_name')
         calories = data.get('calories')
+        date = data.get('date')
 
-        if not food_name or not calories:
+        if not food_name or not calories or not date:
             return {'error': 'Missing required fields'}, 400
 
         try:
             new_food = Food(
                 user_id=user_id,
                 food_name=food_name,
-                calories=calories
+                calories=calories,
+                date=date
             )
             db.session.add(new_food)
             db.session.commit()

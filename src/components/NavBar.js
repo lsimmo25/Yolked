@@ -47,6 +47,11 @@ const NavBar = () => {
             Body Weight
           </NavLink>
         </li>
+        <li>
+          <NavLink to="/food-logger" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+            Food Logger
+          </NavLink>
+        </li>
         {user ? (
           <li className="user-menu" onClick={toggleDropdown}>
             <img src={user.image_url} alt="prof_pic" className="prof-pic" />

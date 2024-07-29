@@ -16,7 +16,7 @@ class User(db.Model, SerializerMixin):
 
     workouts = db.relationship('Workout', back_populates='user', cascade='all, delete-orphan')
     body_weights = db.relationship('BodyWeight', back_populates='user', cascade='all, delete-orphan')
-    foods = db.relationship('Foods', back_populates='user', cascade='all, delete-orphan')
+    foods = db.relationship('Food', back_populates='user', cascade='all, delete-orphan')
 
     @validates('username')
     def validate_username(self, key, username):
@@ -46,9 +46,10 @@ class Food(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     food_name = db.Column(db.String, nullable=False)
-    calories = db.Column(db.String, nullable=False)
+    calories = db.Column(db.Integer, nullable=False)
+    date = db.Column(db.String, nullable=False)  # Add date field
 
-    user = db.relationship('User', back_populates="foods")
+    user = db.relationship('User', back_populates='foods')
     
 # Body Weight Model
 class BodyWeight(db.Model, SerializerMixin):

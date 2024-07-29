@@ -7,6 +7,7 @@ import Workouts from './pages/Workouts';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
 import BodyWeight from './pages/BodyWeight';
+import FoodLogger from './pages/FoodLogger';
 import './App.css';
 
 function App() {
@@ -33,6 +34,7 @@ function MainApp() {
           <Route path="/workouts" element={<Workouts />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/body-weight" element={<BodyWeight />} />
+          <Route path="/food-logger" element={<FoodLogger />} />
           <Route path="/login" element={<Login />} />
         </Routes>
       </main>
