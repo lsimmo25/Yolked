@@ -430,6 +430,112 @@ class BodyWeightByID(Resource):
             return {"message": "Body weight entry deleted successfully"}, 200
         except Exception as e:
             return {"errors": [str(e)]}, 400
+    
+class Foods(Resource):
+    def get(self):
+        user_id = get_current_user_id()
+
+        if not user_id:
+            return {'error': 'User not authenticated'}, 401
+
+        foods = Food.query.filter_by(user_id=user_id).all()
+        foods_dict = [food.to_dict() for food in foods]
+        return foods_dict, 200
+
+    def post(self):
+        user_id = get_current_user_id()
+
+        if not user_id:
+            return {'error': 'User not authenticated'}, 401
+
+        data = request.get_json()
+        food_name = data.get('food_name')
+        calories = data.get('calories')
+
+        if not food_name or not calories:
+            return {'error': 'Missing required fields'}, 400
+
+        try:
+            new_food = Food(
+                user_id=user_id,
+                food_name=food_name,
+                calories=calories
+            )
+            db.session.add(new_food)
+            db.session.commit()
+            return new_food.to_dict(), 201
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
+
+class FoodByID(Resource):
+    def get(self, id):
+        food = Food.query.filter_by(id=id).first()
+        if not food:
+            return {"errors": ["Food entry not found"]}, 400
+        return food.to_dict(), 200
+
+    def patch(self, id):
+        food = Food.query.filter_by(id=id).first()
+        if not food:
+            return {"errors": ["Food entry not found"]}, 400
+
+        data = request.get_json()
+        if 'food_name' in data:
+            food.food_name = data['food_name']
+        if 'calories' in data:
+            food.calories = data['calories']
+
+        try:
+            db.session.commit()
+            return food.to_dict(), 200
+        except Exception as e:
+            return {"errors": [str(e)]}, 400
+
+    def delete(self, id):
+        food = Food.query.filter_by(id=id).first()
+        if not food:
+            return {"errors": ["Food entry not found"]}, 400
+
+        try:
+            db.session.delete(food)
+            db.session.commit()
+            return {"message": "Food entry deleted successfully"}, 200
+        except Exception as e:
+            return {"errors": [str(e)]}, 400
+
+class CaloricGoal(Resource):
+    def get(self):
+        user_id = get_current_user_id()
+
+        if not user_id:
+            return {'error': 'User not authenticated'}, 401
+
+        user = User.query.get(user_id)
+        if not user:
+            return {'errors': ['User not found']}, 400
+
+        return {'caloric_goal': user.caloric_goal}, 200
+
+    def patch(self):
+        user_id = get_current_user_id()
+
+        if not user_id:
+            return {'error': 'User not authenticated'}, 401
+
+        data = request.get_json()
+        caloric_goal = data.get('caloric_goal')
+
+        if caloric_goal is None:
+            return {'error': 'Caloric goal is required'}, 400
+
+        try:
+            user = User.query.get(user_id)
+            user.caloric_goal = caloric_goal
+            db.session.commit()
+            return {'caloric_goal': user.caloric_goal}, 200
+        except Exception as e:
+            return {'errors': [str(e)]}, 400
 
 # Add resources to API
 api.add_resource(HomePage, '/')
@@ -446,6 +552,9 @@ api.add_resource(ExerciseByID, '/exercises/<int:id>')
 api.add_resource(WorkoutExercises, '/workout_exercises')
 api.add_resource(BodyWeights, '/body_weights')
 api.add_resource(BodyWeightByID, '/body_weights/<int:id>')
+api.add_resource(Foods, '/foods')
+api.add_resource(FoodByID, '/foods/<int:id>')
+api.add_resource(CaloricGoal, '/caloric_goal')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

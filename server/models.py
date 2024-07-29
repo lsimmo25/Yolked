@@ -12,9 +12,11 @@ class User(db.Model, SerializerMixin):
     _password_hash = db.Column(db.String, nullable=True)
     image_url = db.Column(db.String, nullable=True)
     bio = db.Column(db.String, nullable=True)
+    caloric_goal = db.Column(db.Integer, nullable=True)
 
     workouts = db.relationship('Workout', back_populates='user', cascade='all, delete-orphan')
     body_weights = db.relationship('BodyWeight', back_populates='user', cascade='all, delete-orphan')
+    foods = db.relationship('Foods', back_populates='user', cascade='all, delete-orphan')
 
     @validates('username')
     def validate_username(self, key, username):
@@ -35,6 +37,18 @@ class User(db.Model, SerializerMixin):
 
     def authenticate(self, password):
         return bcrypt.check_password_hash(self._password_hash, password.encode('utf-8'))
+    
+# Food Model
+
+class Food(db.Model, SerializerMixin):
+    __tablename__ = "foods"
+    serialize_rules = ('-user.foods',)
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    food_name = db.Column(db.String, nullable=False)
+    calories = db.Column(db.String, nullable=False)
+
+    user = db.relationship('User', back_populates="foods")
     
 # Body Weight Model
 class BodyWeight(db.Model, SerializerMixin):
