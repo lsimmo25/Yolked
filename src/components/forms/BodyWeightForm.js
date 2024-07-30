@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { UserContext } from '../Context/UserContext';
 import './BodyWeightForm.css';
+import moment from 'moment-timezone';
 
 const BodyWeightForm = ({ addBodyWeight }) => {
   const [date, setDate] = useState('');
@@ -9,12 +10,16 @@ const BodyWeightForm = ({ addBodyWeight }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const easternTimeDate = moment.tz(date, 'America/New_York').format('YYYY-MM-DD');
+    console.log(`Entered date: ${date}, Eastern Time date: ${easternTimeDate}`);
+
     fetch('/body_weights', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ date, weight: parseFloat(weight) }),
+      body: JSON.stringify({ date: easternTimeDate, weight: parseFloat(weight) }),
     })
       .then((r) => {
         if (!r.ok) {
@@ -48,7 +53,7 @@ const BodyWeightForm = ({ addBodyWeight }) => {
           type="number"
           value={weight}
           onChange={(e) => setWeight(e.target.value)}
-          placeholder='Enter Weight'
+          placeholder="Enter Weight"
           required
         />
       </label>

@@ -1,7 +1,7 @@
-// WorkoutHistory.js
-
 import React, { useEffect, useState } from "react";
 import "./WorkoutHistory.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const WorkoutHistory = ({ workouts, setWorkouts }) => {
   const today = new Date().toLocaleDateString('en-CA');
@@ -82,7 +82,9 @@ const WorkoutHistory = ({ workouts, setWorkouts }) => {
             <li key={workout.id} className="workout-item">
               <div className="workout-header">
                 <strong>{workout.date}</strong>
-                <button onClick={() => handleDelete(workout.id)} className="delete-button">Delete Workout</button>
+                <button onClick={() => handleDelete(workout.id)} className="delete-button">
+                  <FontAwesomeIcon icon={faTrash} className="trash-icon" />
+                </button>
               </div>
               <ul>
                 {workout.exercises && workout.exercises.length > 0 ? (
