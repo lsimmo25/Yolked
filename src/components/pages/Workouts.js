@@ -2,7 +2,6 @@ import React, { useEffect, useState, useContext } from "react";
 import WorkoutForm from "../forms/WorkoutForm";
 import WorkoutHistory from '../lists/WorkoutHistory';
 import { UserContext } from '../Context/UserContext';
-import '../lists/WorkoutHistory.css';
 
 const Workouts = () => {
   const [workouts, setWorkouts] = useState([]);
@@ -44,6 +43,8 @@ const Workouts = () => {
       <h1 style={{ marginLeft: '20px', color: '#fff' }}>Workouts</h1>
       <div className="workout-container">
         <WorkoutForm updateWorkouts={handleAddWorkout} exercises={exercises} setExercises={setExercises} />
+      </div>
+      <div className="workout-container">
         <WorkoutHistory workouts={workouts} setWorkouts={setWorkouts} />
       </div>
     </div>
