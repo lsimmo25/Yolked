@@ -31,10 +31,10 @@ const NavBar = () => {
   return (
     <nav>
       <ul>
-        <li>
-          <NavLink to="/" exact="true" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+        <li className="home-link">
+          <NavLink to="/" exact="true" className="home-navlink">
             <img src={logo} alt="Logo" className="nav-logo" />
-            Home
+            YOLKED
           </NavLink>
         </li>
         <li>
